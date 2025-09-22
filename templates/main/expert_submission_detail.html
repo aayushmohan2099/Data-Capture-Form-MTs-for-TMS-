@@ -1,0 +1,406 @@
+{% extends "main/base.html" %}
+{% block title %}Submission Detail{% endblock %}
+
+{% block content %}
+<style>
+/* Layout and page header */
+.submission-wrap {
+  max-width: 1100px;
+  margin: 18px auto 60px;
+  padding: 0 16px;
+}
+.submission-header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+.submission-title {
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  font-size: 42px;
+  letter-spacing: 2px;
+  color: #2b6fb2;
+  text-transform: uppercase;
+  margin: 6px 0 8px;
+  text-shadow: 0 6px 0 rgba(255,255,255,0.14), 0 3px 8px rgba(0,0,0,0.12);
+}
+
+/* trainer/meta row */
+.trainer-meta {
+  display:flex;
+  justify-content:space-between;
+  gap: 12px;
+  align-items:center;
+  margin: 8px 0 18px;
+  color:#0b3550;
+  font-weight:700;
+}
+
+/* profile card */
+.profile-card {
+  background: linear-gradient(#f6fbff,#eef6ff);
+  border-radius: 8px;
+  padding: 18px;
+  box-shadow: 0 8px 20px rgba(8,19,30,0.04);
+  border: 1px solid rgba(11,53,80,0.06);
+  margin-bottom: 22px;
+}
+
+/* two-column grid for profile details */
+.profile-grid {
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 28px;
+  align-items:start;
+}
+.profile-section-title {
+  grid-column: 1 / -1;
+  text-align:center;
+  font-size:22px;
+  color:#2b6fb2;
+  font-weight:800;
+  margin: 4px 0 8px;
+  text-shadow: 0 4px 0 rgba(255,255,255,0.12);
+}
+
+/* field row */
+.field-row {
+  display:flex;
+  gap: 8px;
+  align-items:flex-start;
+  margin-bottom:6px;
+}
+.field-row .label {
+  width: 180px;
+  font-weight:700;
+  color:#16325a;
+}
+.field-row .value {
+  color:#0f2340;
+}
+
+/* full-width textarea-like values */
+.full-width {
+  grid-column: 1 / -1;
+  background: rgba(11,53,80,0.03);
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(11,53,80,0.04);
+}
+
+/* Certificates header */
+.certs-title {
+  text-align:center;
+  font-size:28px;
+  color:#2b6fb2;
+  margin: 22px 0 12px;
+  font-weight:800;
+  text-shadow: 0 4px 0 rgba(255,255,255,0.12);
+}
+
+/* certificate card list */
+.certs-list {
+  display:flex;
+  flex-direction:column;
+  gap: 14px;
+  align-items:center;
+  margin-bottom: 18px;
+}
+
+/* one certificate card */
+.cert-card {
+  width: 100%;
+  max-width:920px;
+  background: linear-gradient(#0f345d,#12345e);
+  color: white;
+  border-radius: 14px;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.14);
+  border: 2px solid rgba(255,255,255,0.03);
+}
+
+/* left area: checkbox + title */
+.cert-left {
+  display:flex;
+  align-items:flex-start;
+  gap: 12px;
+  min-width: 420px;
+}
+.cert-left .check {
+  margin-top:6px;
+}
+.cert-left .title {
+  font-weight:700;
+  font-size:16px;
+  line-height:1.25;
+  color:#e9f5ff;
+}
+.cert-left .meta-small {
+  display:block;
+  margin-top:6px;
+  font-size:13px;
+  color: rgba(255,255,255,0.9);
+}
+
+/* right meta */
+.cert-right {
+  text-align:right;
+  min-width:200px;
+}
+.cert-right .meta-line { font-weight:700; }
+.cert-right .meta-sub { font-weight:600; color:rgba(255,255,255,0.9); margin-top:6px; font-size:13px; }
+
+/* action buttons row */
+.actions-row {
+  display:flex;
+  gap: 14px;
+  justify-content:center;
+  margin-top: 18px;
+  flex-wrap:wrap;
+}
+.action-btn {
+  background: linear-gradient(#4aa1e8, #2a6fb0);
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-weight:800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(20,70,110,0.45), 0 0 18px rgba(45,185,255,0.12);
+}
+.action-btn.reject {
+  background: linear-gradient(#c74a4a,#9b2b2b);
+  box-shadow: 0 6px 0 rgba(120,20,20,0.35);
+}
+
+/* reason box */
+.reason-wrap {
+  display:flex;
+  gap: 18px;
+  align-items:flex-start;
+  margin-top: 18px;
+}
+.reason-wrap .label {
+  color:#2b6fb2;
+  font-weight:800;
+  font-size:18px;
+}
+.reason-wrap textarea {
+  flex:1;
+  min-height:70px;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid rgba(11,53,80,0.12);
+  box-shadow:none;
+  font-size:14px;
+}
+
+/* utility */
+.small-link { font-size:0.95em; color:#083355; text-decoration: underline; }
+.center { text-align:center; }
+
+/* responsive */
+@media (max-width:900px) {
+  .trainer-meta { flex-direction:column; align-items:flex-start; gap:6px; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .cert-left { min-width: auto; }
+  .cert-right { text-align:left; min-width: auto; margin-left:auto; }
+  .cert-card { flex-direction:column; align-items:flex-start; text-align:left; padding:14px; }
+  .cert-right { margin-top:8px; width:100%; }
+  .actions-row { justify-content:flex-start; }
+}
+a:link {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+</style>
+
+<div class="submission-wrap">
+  <header class="submission-header">
+    <div class="submission-title">Submission Review</div>
+  </header>
+
+  <section class="trainer-meta" aria-labelledby="trainer-info">
+    <div id="trainer-info">
+      <strong>Trainer:</strong>
+      {% if submission.trainer %}
+        {{ submission.trainer.full_name }} — Mobile: {{ submission.trainer.mobile_no }}
+      {% else %}
+        {{ submission.full_name }} — Mobile: {{ submission.mobile_no }}
+      {% endif %}
+    </div>
+
+    <div>
+      <strong>Submitted at:</strong> {{ submission.submitted_at }}
+    </div>
+  </section>
+
+  <!-- Profile card -->
+  <section class="profile-card" aria-labelledby="profile-heading">
+    <div id="profile-heading" class="profile-section-title">Basic Identification Details</div>
+
+    <div class="profile-grid">
+      <div>
+        <div class="field-row">
+          <div class="label">Full name</div>
+          <div class="value">{{ submission.full_name|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Mobile No.</div>
+          <div class="value">{{ submission.mobile_no|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Empanel District</div>
+          <div class="value">{{ submission.empanel_district|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Gender</div>
+          <div class="value">{{ submission.gender|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Marital status</div>
+          <div class="value">{{ submission.marital_status|default:"-" }}</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="field-row">
+          <div class="label">Date of birth</div>
+          <div class="value">{{ submission.date_of_birth|date:"d M Y"|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Aadhaar No</div>
+          <div class="value">{{ submission.aadhaar_no|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Social Category</div>
+          <div class="value">{{ submission.social_category|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Education</div>
+          <div class="value">{{ submission.education|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Father/Mother/Spouse</div>
+          <div class="value">{{ submission.parent_or_spouse_name|default:"-" }}</div>
+        </div>
+      </div>
+
+      <!-- Banking heading spans full width -->
+      <div class="profile-section-title">Banking Details</div>
+
+      <div>
+        <div class="field-row">
+          <div class="label">Bank account</div>
+          <div class="value">{{ submission.bank_account_number|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Branch</div>
+          <div class="value">{{ submission.branch_name|default:"-" }}</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="field-row">
+          <div class="label">IFSC</div>
+          <div class="value">{{ submission.ifsc|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label">Bank name</div>
+          <div class="value">{{ submission.bank_name|default:"-" }}</div>
+        </div>
+      </div>
+
+      <div class="profile-section-title">Others</div>
+
+      <div class="full-width">
+        <div class="field-row" style="margin-bottom:12px;">
+          <div class="label" style="width:220px;">Other achievements</div>
+          <div class="value">{{ submission.other_achievements|linebreaksbr|default:"-" }}</div>
+        </div>
+        <div class="field-row">
+          <div class="label" style="width:220px;">Success stories</div>
+          <div class="value">{{ submission.success_stories|linebreaksbr|default:"-" }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Certificates -->
+  <div class="certs-title">Certificates</div>
+
+  <form method="post">{% csrf_token %}
+    <p style="max-width:920px; margin:0 auto 12px; color:#333;">
+      Select certificates to act on. You can approve/revert multiple selected certificates, or reject the submission.
+    </p>
+
+    <div class="certs-list">
+      {% for c in pending_certs %}
+        <div class="cert-card" role="group" aria-labelledby="cert-{{ c.pk }}">
+          <div class="cert-left">
+            <div class="check">
+              <input type="checkbox" name="cert_ids" value="{{ c.pk }}" id="cert-{{ c.pk }}">
+            </div>
+
+            <div>
+              <div class="title" id="cert-{{ c.pk }}-title">
+                {% if c.certificate_number %}{{ c.certificate_number }}{% else %}File #{{ forloop.counter }}{% endif %}
+                &nbsp;—&nbsp;
+                {% if c.training_module %}
+                  {{ c.training_module.training_name }}
+                  {% if c.training_module.theme %} ({{ c.training_module.theme }}){% endif %}
+                {% else %}
+                  Module: Not assigned
+                {% endif %}
+              </div>
+
+              <span class="meta-small">
+                {% if c.certificate_file %}
+                  <a href="{{ c.certificate_file.url }}" target="_blank" >VIEW</a>
+                {% else %}
+                  (no file)
+                {% endif %}
+                &nbsp;|&nbsp;
+                Issued on: {{ c.issued_on|date:"d M Y"|default:"-" }}
+                &nbsp;|&nbsp;
+                Issuing authority: {{ c.issuing_authority|default:"-" }}
+              </span>
+            </div>
+          </div>
+
+          <div class="cert-right">
+            <div class="meta-line">Submitted at: {{ submission.submitted_at }}</div>
+            <div class="meta-sub">
+              Certificate metadata
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div style="max-width:920px; margin: 8px auto; color:#444;">No pending certificates for your theme.</div>
+      {% endfor %}
+    </div>
+
+    <div class="actions-row">
+      <button class="action-btn" name="action" value="approve" type="submit">Approve selected</button>
+      <button class="action-btn" name="action" value="revert" type="submit">Revert selected</button>
+      <button class="action-btn reject" name="action" value="reject" type="submit">Reject submission</button>
+    </div>
+
+    <div class="reason-wrap">
+      <div class="label">Reason for rejection</div>
+      <textarea name="rejection_reason" placeholder="Explain why you're rejecting (optional)"></textarea>
+    </div>
+  </form>
+
+
+</div>
+{% endblock %}

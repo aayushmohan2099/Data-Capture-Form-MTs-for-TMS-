@@ -1,0 +1,49 @@
+{% extends "main/base.html" %}
+{% block title %}Trainer detail{% endblock %}
+{% block content %}
+  <h2>Trainer: {{ trainer.full_name }}</h2>
+  <p>Mobile: {{ trainer.mobile_no }} &nbsp; - &nbsp; District: {{ trainer.empanel_district|default:"-" }}</p>
+
+  <h3>Profile fields</h3>
+  <table style="width:100%; border-collapse:collapse;">
+    <tbody>
+      <tr><th style="text-align:left; padding:6px;">Full name</th><td style="padding:6px;">{{ trainer.full_name }}</td></tr>
+      <tr><th style="text-align:left; padding:6px;">Mobile</th><td style="padding:6px;">{{ trainer.mobile_no }}</td></tr>
+      <tr><th style="text-align:left; padding:6px;">Aadhaar</th><td style="padding:6px;">{{ trainer.aadhaar_no|default:"-" }}</td></tr>
+      <tr><th style="text-align:left; padding:6px;">Education</th><td style="padding:6px;">{{ trainer.education|default:"-" }}</td></tr>
+      <tr><th style="text-align:left; padding:6px;">Bank</th><td style="padding:6px;">{{ trainer.bank_name|default:"-" }} / {{ trainer.bank_account_number|default:"-" }}</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:14px;">Recent submissions</h3>
+  <table style="width:100%; border-collapse:collapse;">
+    <thead>
+      <tr style="background:#f6f9fc;color:#083355;"><th style="padding:6px;">Submission</th><th style="padding:6px;">Status</th><th style="padding:6px;">Submitted at</th></tr>
+    </thead>
+    <tbody>
+      {% for s in submissions %}
+        <tr>
+          <td style="padding:6px;">{{ s.pk }}</td>
+          <td style="padding:6px;">{{ s.get_status_display }}</td>
+          <td style="padding:6px;">{{ s.submitted_at }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3" style="padding:6px;">No submissions</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:18px;">Certificates</h3>
+  <ul>
+    {% for c in certificates %}
+      <li style="margin-bottom:6px;">
+        {% if c.certificate_file %}<a href="{{ c.certificate_file.url }}" target="_blank">File</a>{% else %}No file{% endif %}
+         — Module: {% if c.training_module %}{{ c.training_module.training_name }}{% else %}Unassigned{% endif %}
+         — Status: {{ c.get_status_display }}
+      </li>
+    {% empty %}
+      <li>No certificates uploaded yet.</li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

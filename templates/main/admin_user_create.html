@@ -1,0 +1,144 @@
+{% extends "main/base.html" %}
+{% block title %}Create User{% endblock %}
+
+{% block content %}
+<style>
+  :root{
+    --accent:#0b3550;
+    --accent-strong:#214b6f;
+    --panel-bg-start:#2d6aa0;
+    --panel-bg-end:#214b6f;
+    --inner-bg-start:#eef7ff;
+    --inner-bg-end:#dff0fb;
+    --muted:#6b7b86;
+    --card-shadow: 0 10px 28px rgba(8,19,30,0.06);
+  }
+
+  .admin-form-wrap {
+    max-width: 720px;
+    margin: 28px auto;
+    padding: 0 12px;
+  }
+
+  .panel {
+    background: linear-gradient(var(--panel-bg-start), var(--panel-bg-end));
+    padding: 22px;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    color: white;
+  }
+
+  .panel-inner {
+    background: linear-gradient(var(--inner-bg-start), var(--inner-bg-end));
+    color: #0f2340;
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .page-title {
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    font-size: 30px;
+    letter-spacing: 1.4px;
+    color: var(--accent);
+    text-align: center;
+    margin: 2px 0 14px;
+    font-weight: 800;
+  }
+
+  .form-area {
+    margin-top: 6px;
+  }
+
+  /* If you keep form.as_p this will style those <p> blocks nicely */
+  .form-area p {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 10px 0;
+  }
+  .form-area label {
+    width: 180px;
+    font-weight: 700;
+    color: var(--accent-strong);
+    text-align: right;
+    margin: 0;
+  }
+  .form-area .field {
+    flex: 1 1 auto;
+  }
+
+  /* provide a clean card for any list-like errors/messages */
+  .messages {
+    list-style: none;
+    margin: 0 0 12px 0;
+    padding: 0;
+  }
+  .messages li {
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-weight:700;
+  }
+  .messages .error { background:#fbecec; color:#7a0000; }
+  .messages .success { background:#e6f6ea; color:#12621b; }
+
+  .primary-btn {
+    display:block;
+    width:100%;
+    background: linear-gradient(#4aa1e8,#2a6fb0);
+    color:white;
+    border:none;
+    padding:12px 16px;
+    font-weight:800;
+    border-radius:8px;
+    box-shadow: 0 6px 0 rgba(20,70,110,0.35);
+    cursor:pointer;
+    margin-top:12px;
+    font-size:16px;
+  }
+
+  .back-link {
+    display:inline-block;
+    margin-top:12px;
+    color:var(--accent);
+    text-decoration:underline;
+  }
+
+  /* responsive: labels stack on small screens */
+  @media (max-width:640px) {
+    .form-area p { flex-direction: column; align-items:stretch; }
+    .form-area label { text-align:left; width:100%; margin-bottom:6px; }
+  }
+</style>
+
+<div class="admin-form-wrap">
+  <div class="panel" role="region" aria-labelledby="create-user-heading">
+    <div class="panel-inner">
+      <h1 id="create-user-heading" class="page-title">Create User</h1>
+
+      {% if messages %}
+        <ul class="messages" aria-live="polite">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="form-area">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {# Keep form rendering exactly as before to avoid changing server-side behavior #}
+          {# We apply lightweight layout styles to the generated paragraphs from form.as_p #}
+          {{ form.as_p }}
+
+          <button class="primary-btn" type="submit">Create</button>
+        </form>
+      </div>
+
+      <p style="text-align:center; margin-top:14px;">
+        <a class="back-link" href="{% url 'admin_users_list' %}">Back to user list</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

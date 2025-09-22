@@ -1,0 +1,20 @@
+{# templates/admin/trainingplan_change_list.html #}
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{# Inject Import / Download buttons into the object-tools area #}
+{% block object-tools %}
+  {{ block.super }}
+  <ul class="object-tools">
+    <li>
+      <a href="{% url 'admin:trainingplan_import_csv' %}" class="addlink">
+        {% trans "Import CSV" %}
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'admin:trainingplan_download_blueprint' %}" class="addlink">
+        {% trans "Download blueprint" %}
+      </a>
+    </li>
+  </ul>
+{% endblock %}

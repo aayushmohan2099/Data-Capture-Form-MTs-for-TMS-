@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+  <div class="app-trainingplan module">
+    <h1>Import Training Plans (CSV)</h1>
+
+    <div class="module">
+      <p>Upload a CSV file containing <strong>training_name</strong> and <strong>theme</strong> columns. The blueprint is available below.</p>
+
+      <form action="" method="post" enctype="multipart/form-data" style="margin-top:1em;">
+        {% csrf_token %}
+        <div>
+          <label for="id_csv_file"><strong>CSV file</strong></label><br>
+          <input type="file" name="csv_file" id="id_csv_file" accept=".csv,text/csv" required>
+        </div>
+        <div style="margin-top:10px;">
+          <input type="submit" value="Upload CSV" class="default">
+          <a href="{% url 'admin:trainingplan_download_blueprint' %}" class="button">Download blueprint</a>
+          <a href=".." class="button">Back to Training Plans</a>
+        </div>
+      </form>
+
+      <div style="margin-top:18px; font-size:0.95em; color:#666;">
+        <p><strong>Notes:</strong></p>
+        <ul>
+          <li>CSV must include headers: <code>training_name</code>, <code>theme</code>.</li>
+          <li>Rows with blank <code>training_name</code> are skipped.</li>
+          <li>If a training with same <code>training_name</code> exists, its <code>theme</code> will be updated.</li>
+          <li>We do not assign <code>theme_expert</code> here — you can link experts later from the admin UI.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}

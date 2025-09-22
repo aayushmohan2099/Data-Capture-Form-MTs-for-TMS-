@@ -1,0 +1,162 @@
+{% extends "main/base.html" %}
+{% block title %}Master Trainer Home{% endblock %}
+
+{% block head %}
+<style>
+/* Page-specific styles for master_home */
+.mt-dashboard-title {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  color: #2b6aa0;
+  text-align: center;
+  margin: 6px 0 18px;
+  letter-spacing: 1px;
+  text-shadow: 0 6px 0 rgba(255,255,255,0.4), 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.mt-meta {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin: 6px 0 50px; /* space below trainer info */
+  padding: 0 14px;
+}
+.mt-meta .left, .mt-meta .right {
+  flex:1;
+  font-size:18px;
+  color:#06263a;
+  font-weight:600;
+}
+
+/* Table heading */
+.mt-table-heading {
+  text-align:center;
+  font-size:26px;
+  font-weight:800;
+  color:#1b4b73;
+  margin-bottom:10px; /* keep close to table */
+  text-transform:uppercase;
+  text-shadow: 0 3px 0 rgba(255,255,255,0.4), 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* table styling */
+.mt-table-wrap { display:flex; justify-content:center; }
+.mt-table {
+  width:92%;
+  border-collapse: collapse;
+  margin: 0 auto 36px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  background: #f7f7f7;
+}
+
+.mt-table thead th {
+  background:#3f78b0;
+  color:white;
+  padding:14px 12px;
+  font-weight:800;
+  text-align:left;
+  border-bottom:4px solid rgba(0,0,0,0.06);
+}
+
+.mt-table tbody td {
+  padding:12px;
+  border-top:1px solid rgba(0,0,0,0.04);
+  vertical-align:middle;
+  color:#06263a;
+}
+
+.mt-table tbody tr:nth-child(even) td {
+  background: #eef3f8;
+}
+.mt-table tbody tr:nth-child(odd) td {
+  background: #ffffff;
+}
+
+.mt-muted { color:#666; font-weight:600; }
+.mt-actions .btn { padding:8px 12px; font-weight:700; border-radius:6px; }
+
+@media (max-width:900px){
+  .mt-dashboard-title { font-size:32px; }
+  .mt-meta { flex-direction:column; gap:6px; text-align:center; }
+  .mt-meta .left, .mt-meta .right { flex:none; width:100%; }
+  .mt-table { width:100%; }
+  .mt-table thead th { font-size:13px; padding:10px; }
+  .mt-table tbody td { font-size:14px; padding:10px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mt-dashboard-title">MASTER TRAINER DASHBOARD</div>
+
+<div class="mt-meta">
+  <div class="left">
+    {% if profile %}
+      Trainer: <span style="font-weight:900; color:#0b3b5d;">{{ profile.full_name }}</span>
+    {% else %}
+      Trainer: <span class="mt-muted">Unknown</span>
+    {% endif %}
+  </div>
+
+  <div class="right" style="text-align:right;">
+    {% if profile %}
+      Mobile: <span style="font-weight:900; color:#0b3b5d;">{{ profile.mobile_no }}</span>
+    {% else %}
+      Mobile: <span class="mt-muted">-</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="mt-table-heading">Submissions List</div>
+
+<div class="mt-table-wrap">
+  <table class="mt-table" role="table" aria-label="My Submissions">
+    <thead>
+      <tr>
+        <th style="width:6%;">ID</th>
+        <th style="width:14%;">Submitted At</th>
+        <th style="width:12%;">Status</th>
+        <th style="width:15%;">Reviewed At</th>
+        <th style="width:20%;">Rejection Reason</th>
+        <th style="width:18%;">Rejection Authority</th>
+        <th style="width:15%;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in submissions %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ s.submitted_at|date:"M j, Y, P" }}</td>
+          <td style="font-weight:800; color:#184f7a;">{{ s.get_status_display }}</td>
+          <td>{% if s.reviewed_at %}{{ s.reviewed_at|date:"M j, Y, P" }}{% else %}<span class="mt-muted">None</span>{% endif %}</td>
+          <td>{% if s.rejection_reason %}{{ s.rejection_reason }}{% else %}<span class="mt-muted">None</span>{% endif %}</td>
+          <td>
+            {% if s.rejection_authority_label %}
+              {{ s.rejection_authority_label }}
+            {% elif s.reverted_themes_display %}
+              {{ s.reverted_themes_display }}
+            {% else %}
+              <span class="mt-muted">-</span>
+            {% endif %}
+          </td>
+          <td class="mt-actions">
+            {% if s.reverted_themes_display %}
+              <a class="btn" href="{% url 'resubmit_certificates' s.pk %}">Resubmit reverted cert(s)</a>
+            {% else %}
+              <span class="mt-muted">-</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="7" style="text-align:center; padding:28px 12px;">
+            No submissions yet. <a class="btn" href="{% url 'capture_submission' %}">Create new submission</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

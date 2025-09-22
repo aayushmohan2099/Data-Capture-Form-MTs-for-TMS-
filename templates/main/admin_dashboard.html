@@ -1,0 +1,22 @@
+{% extends "main/base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1>Admin Dashboard</h1>
+<div style="display:flex; gap:20px; flex-wrap:wrap;">
+  <div style="background:#083355;color:white;padding:16px;min-width:220px;">
+    <h3>Approved trainers</h3>
+    <p style="font-size:28px; font-weight:700;">{{ approved_trainers }}</p>
+    <p><a class="btn" href="{% url 'admin_approved_trainers' %}">Open list</a></p>
+  </div>
+  <div style="background:#083355;color:white;padding:16px;min-width:220px;">
+    <h3>Total users</h3>
+    <p style="font-size:28px; font-weight:700;">{{ total_users }}</p>
+    <p><a class="btn" href="{% url 'admin_users_list' %}">Manage users</a></p>
+  </div>
+  <div style="background:#083355;color:white;padding:16px;min-width:220px;">
+    <h3>Pending certificates</h3>
+    <p style="font-size:28px; font-weight:700;">{{ pending_certs }}</p>
+    <p><a class="btn" href="{% url 'admin_pending_certificates' %}">Open pending certificates</a></p>
+  </div>
+</div>
+{% endblock %}

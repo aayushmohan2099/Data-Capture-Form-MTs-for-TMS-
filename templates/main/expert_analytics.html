@@ -1,0 +1,89 @@
+{% extends "main/base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<style>
+:root {
+  --card-bg: #fff;
+  --accent: #083355;
+  --muted: #5b6b7a;
+  --row-hover: rgba(8,51,85,0.04);
+  --border: rgba(8,51,85,0.06);
+}
+
+.table-card {
+  max-width: 1100px;
+  margin: 10px auto 60px;
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 8px 20px rgba(8,19,30,0.04);
+  border: 1px solid var(--border);
+}
+
+.summary {
+  margin-bottom: 12px;
+  font-size:16px;
+}
+
+.modern-table {
+  width:100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.modern-table thead th {
+  background: linear-gradient(180deg,#eef9ff,#e6f3ff);
+  color: var(--accent);
+  font-weight:700;
+  text-align:left;
+  padding:12px 14px;
+  border-bottom:1px solid rgba(0,0,0,0.04);
+}
+
+.modern-table tbody td {
+  padding:12px 14px;
+  border-bottom:1px solid rgba(0,0,0,0.03);
+}
+
+.modern-table tbody tr:hover { background: var(--row-hover); }
+.modern-table tbody tr:nth-child(even) td { background: rgba(8,51,85,0.02); }
+
+/* right-align numeric columns */
+.modern-table td.num { text-align: right; font-weight:700; color:#0b3550; }
+
+/* responsive */
+@media (max-width:800px) {
+  .modern-table thead { display:none; }
+  .modern-table td::before { content: attr(data-label); display:block; font-weight:700; color:#666; margin-bottom:6px; }
+  .modern-table, .modern-table tbody, .modern-table tr, .modern-table td { display:block; width:100%; }
+}
+</style>
+
+<div class="table-card">
+  <h2>Analytics — your themes</h2>
+
+  <p class="summary">Total certificates submitted for your training plans: <strong>{{ total_submitted }}</strong></p>
+
+  <table class="modern-table" role="table" aria-label="Analytics counts">
+    <thead>
+      <tr>
+        <th>Training plan</th>
+        <th>Theme</th>
+        <th style="text-align:right;">Submitted certificates</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in counts %}
+        <tr>
+          <td data-label="Training plan">{{ r.plan.training_name }}</td>
+          <td data-label="Theme">{{ r.plan.theme|default:"-" }}</td>
+          <td data-label="Submitted certificates" class="num">{{ r.count }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3" style="padding:12px; color:#444;">No certificates submitted for your plans yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "main/base.html" %}
+{% block title %}Master Trainer Signup{% endblock %}
+
+{% block content %}
+<style>
+    /* --- Centering the Form --- */
+    .content-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 50vh;
+        padding: 30px 12px;
+    }
+
+    /* --- Panel Styling --- */
+    .panel {
+        background: linear-gradient(#2d6aa0, #214b6f);
+        padding: 26px;
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        color: white;
+        width: 100%;
+        max-width: 540px;
+    }
+
+    .panel-inner {
+        background: linear-gradient(#eaf1fb, #d6e7fb);
+        color: #111;
+        padding: 22px;
+        border-radius: 8px;
+    }
+
+    /* --- Title Styling --- */
+    .title {
+        font-family: 'Trebuchet MS', Arial, sans-serif;
+        font-size: 28px;
+        letter-spacing: 1.5px;
+        color: #2b6fb2;
+        text-shadow: 0 4px 0 rgba(255,255,255,0.12);
+        margin-bottom: 14px;
+        text-align: center;
+    }
+
+    /* --- Form Table Layout --- */
+    .form-table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin-top: 6px;
+    }
+
+    .form-table .label-cell {
+        font-weight: 700; 
+        width: 38%; 
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.04);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        text-align: right; /* Right-align labels */
+        vertical-align: middle;
+    }
+
+    .form-table .input-cell {
+        padding: 12px;
+        border-top: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .form-table input[type="text"],
+    .form-table input[type="password"],
+    .form-table input[type="tel"],
+    .form-table input {
+        width: 96%;
+        padding: 8px;
+        border: 1px solid #c9d6e8;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    /* --- Button Styling --- */
+    .primary-btn {
+        appearance: none;
+        background: linear-gradient(#4aa1e8, #2a6fb0);
+        color: #fff;
+        border: none;
+        padding: 12px 18px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 6px;
+        box-shadow: 0 6px 0 rgba(20,70,110,0.45), 0 0 18px rgba(45,185,255,0.12);
+        width: 100%;
+        margin-top: 18px;
+        font-size: 16px;
+    }
+
+    .secondary-link {
+        display:block;
+        text-align:center;
+        margin-top:12px;
+        color:#083355;
+        text-decoration:underline;
+    }
+
+    /* --- Success/Error Messages --- */
+    .messages {
+        list-style-type: none;
+        padding: 0;
+        margin: 0 0 14px 0;
+    }
+
+    .messages li {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        text-align: center;
+        font-weight:600;
+    }
+
+    .messages .error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .messages .success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    /* small responsive tweak */
+    @media (max-width:520px) {
+      .form-table .label-cell { display:block; text-align:left; width:100%; padding:8px 6px; }
+      .form-table .input-cell { display:block; padding:8px 6px; }
+      .form-table input { width:100%; }
+    }
+</style>
+
+<div class="content-container">
+    <div class="panel" role="region" aria-labelledby="signup-heading">
+        <div class="panel-inner">
+            <h2 id="signup-heading" class="title">Master Trainer Signup</h2>
+
+            {% if messages %}
+                <ul class="messages" aria-live="polite">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <table class="form-table" role="presentation">
+                    <tr>
+                        <td class="label-cell"><label for="{{ form.mobile.id_for_label }}">Mobile</label></td>
+                        <td class="input-cell">{{ form.mobile }}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="label-cell"><label for="{{ form.password.id_for_label }}">Password</label></td>
+                        <td class="input-cell">{{ form.password }}</td>
+                    </tr>
+                </table>
+
+                <button class="primary-btn" type="submit">Create account</button>
+            </form>
+
+            <a href="{% url 'login' %}" class="secondary-link">Back to login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

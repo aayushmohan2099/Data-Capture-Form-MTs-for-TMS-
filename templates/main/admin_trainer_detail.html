@@ -1,0 +1,75 @@
+{% extends "main/base.html" %}
+{% block title %}Trainer: {{ trainer.full_name }}{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:6px;">Trainer profile</h1>
+<p style="margin-bottom:12px;"><strong>{{ trainer.full_name }}</strong> — Mobile: {{ trainer.mobile_no }}</p>
+
+<div style="display:flex; gap:20px; align-items:flex-start;">
+  <div style="flex:1; min-width:420px; background:#fff; border:1px solid #e7eefc; padding:12px; border-radius:6px;">
+    <h3 style="margin-top:0;">Primary details</h3>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr><td style="padding:6px; width:180px; font-weight:700;">Name</td><td style="padding:6px;">{{ trainer.full_name }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Mobile</td><td style="padding:6px;">{{ trainer.mobile_no }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Date of birth</td><td style="padding:6px;">{{ trainer.date_of_birth|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Aadhaar</td><td style="padding:6px;">{{ trainer.aadhaar_no|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">District</td><td style="padding:6px;">{{ trainer.empanel_district|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Social category</td><td style="padding:6px;">{{ trainer.social_category|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Gender</td><td style="padding:6px;">{{ trainer.gender|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Education</td><td style="padding:6px;">{{ trainer.education|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Marital status</td><td style="padding:6px;">{{ trainer.marital_status|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Parent/Spouse</td><td style="padding:6px;">{{ trainer.parent_or_spouse_name|default:"-" }}</td></tr>
+    </table>
+
+    <h3 style="margin-top:16px;">Bank details</h3>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr><td style="padding:6px; width:180px; font-weight:700;">Account</td><td style="padding:6px;">{{ trainer.bank_account_number|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">IFSC</td><td style="padding:6px;">{{ trainer.ifsc|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Bank</td><td style="padding:6px;">{{ trainer.bank_name|default:"-" }}</td></tr>
+      <tr><td style="padding:6px; font-weight:700;">Branch</td><td style="padding:6px;">{{ trainer.branch_name|default:"-" }}</td></tr>
+    </table>
+  </div>
+
+  <div style="flex:1; min-width:360px;">
+    <div style="background:#f9fbff; border:1px solid #e7eefc; padding:12px; border-radius:6px;">
+      <h3 style="margin-top:0;">Submissions</h3>
+      <table style="width:100%; border-collapse:collapse;">
+        <thead style="background:#eef6ff; color:#083355;">
+          <tr><th style="padding:8px; text-align:left;">Submitted At</th><th style="padding:8px;">Status</th><th style="padding:8px;">Verified by</th></tr>
+        </thead>
+        <tbody>
+          {% for s in submissions %}
+            <tr>
+              <td style="padding:6px;">{{ s.submitted_at }}</td>
+              <td style="padding:6px;">{{ s.get_status_display }}</td>
+              <td style="padding:6px;">{% if s.profile_verified_by %}{{ s.profile_verified_by.get_full_name|default:s.profile_verified_by.username }}{% else %}-{% endif %}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" style="padding:6px;">No submissions</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h3 style="margin-top:14px;">Certificates</h3>
+      <ul>
+        {% for c in certificates %}
+          <li style="margin-bottom:8px;">
+            {% if c.certificate_file %}<a href="{{ c.certificate_file.url }}" target="_blank">File</a>{% else %}No file{% endif %}
+            — Module:
+            {% if c.training_module %}
+              {{ c.training_module.training_name }}
+            {% else %}
+              Unassigned
+            {% endif %}
+            — Status: {{ c.get_status_display }}
+          </li>
+        {% empty %}
+          <li>No certificates uploaded yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<p style="margin-top:18px;"><a class="btn" href="{% url 'admin_approved_trainers' %}">Back to approved list</a></p>
+{% endblock %}

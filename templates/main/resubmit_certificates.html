@@ -1,0 +1,67 @@
+{% extends "main/base.html" %}
+{% block title %}Resubmit Certificates{% endblock %}
+{% block content %}
+  <h2>Resubmit certificates for {{ submission.trainer.full_name }}</h2>
+  <p>Upload replacement files and (optionally) update certificate metadata for the reverted certificate(s).</p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="background:#eef6ff; color:#083355;">
+          <th style="padding:8px; text-align:left;">Module (theme)</th>
+          <th style="padding:8px; text-align:left;">Old file</th>
+          <th style="padding:8px; text-align:left;">New file (required)</th>
+          <th style="padding:8px; text-align:left;">Certificate No.</th>
+          <th style="padding:8px; text-align:left;">Issued on</th>
+          <th style="padding:8px; text-align:left;">Issuing authority</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cert in reverted_certs %}
+          <tr>
+            <td style="padding:8px; vertical-align:middle;">
+              <select name="resub-{{ cert.pk }}-module">
+                <option value="">-- keep/choose module --</option>
+                {% for p in all_plans %}
+                  <option value="{{ p.pk }}" {% if cert.training_module and cert.training_module.pk == p.pk %}selected{% endif %}>
+                    {{ p.training_name }}{% if p.theme %} ({{ p.theme }}){% endif %}
+                  </option>
+                {% endfor %}
+              </select>
+            </td>
+
+            <td style="padding:8px; vertical-align:middle;">
+              {% if cert.certificate_file %}
+                <a href="{{ cert.certificate_file.url }}" target="_blank">Old file</a>
+              {% else %}
+                No file
+              {% endif %}
+            </td>
+
+            <td style="padding:8px; vertical-align:middle;">
+              <input type="file" name="resub-{{ cert.pk }}-file" accept=".pdf,image/*" required>
+            </td>
+
+            <td style="padding:8px; vertical-align:middle;">
+              <input type="text" name="resub-{{ cert.pk }}-number" value="{{ cert.certificate_number|default:"" }}" placeholder="Certificate number">
+            </td>
+
+            <td style="padding:8px; vertical-align:middle;">
+              <input type="date" name="resub-{{ cert.pk }}-issued_on" value="{{ cert.issued_on|date:'Y-m-d' }}">
+            </td>
+
+            <td style="padding:8px; vertical-align:middle;">
+              <input type="text" name="resub-{{ cert.pk }}-issuing" value="{{ cert.issuing_authority|default:"" }}" placeholder="Issuing authority">
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="margin-top:10px;">
+      <button class="btn" type="submit">Upload replacements</button>
+      <a class="btn" href="{% url 'master_home' %}">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "main/base.html" %}
+{% block title %}Approved Trainers{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:8px;">Approved Trainers</h1>
+<p style="margin-bottom:14px;">
+  <a class="btn" href="{% url 'admin_export_trainers_csv' %}">Export all as CSV</a>
+</p>
+
+<div style="overflow:auto; border:1px solid #e0e6ee; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border-radius:6px;">
+  <table style="width:100%; border-collapse:collapse; min-width:900px;">
+    <thead style="background:#2f6ba3; color:white;">
+      <tr>
+        <th style="padding:12px 10px; text-align:left;">ID</th>
+        <th style="padding:12px 10px; text-align:left;">Name</th>
+        <th style="padding:12px 10px; text-align:left;">Mobile</th>
+        <th style="padding:12px 10px; text-align:left;">Empanel District</th>
+        <th style="padding:12px 10px; text-align:left;">Designation</th>   <!-- NEW -->
+        <th style="padding:12px 10px; text-align:left;">First theme</th>    <!-- NEW -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in trainers %}
+        {% with t=entry.trainer %}
+        <tr style="cursor:pointer;" onclick="location.href='{% url 'admin_trainer_detail' t.pk %}';"
+            onmouseover="this.style.backgroundColor='#f4f8ff';" onmouseout="this.style.background='';">
+          <td style="padding:10px 8px; border-top:1px solid #f0f4fb;">{{ t.id }}</td>
+          <td style="padding:10px 8px; border-top:1px solid #f0f4fb;">{{ t.full_name }}</td>
+          <td style="padding:10px 8px; border-top:1px solid #f0f4fb;">{{ t.mobile_no }}</td>
+          <td style="padding:10px 8px; border-top:1px solid #f0f4fb;">{{ t.empanel_district|default:"-" }}</td>
+          <td style="padding:10px 8px; border-top:1px solid #f0f4fb;">{{ entry.designation|default:"-" }}</td>
+          <td style="padding:10px 8px; border-top:1px solid #f0f4fb;">{{ entry.first_theme }}</td>
+        </tr>
+        {% endwith %}
+      {% empty %}
+        <tr><td colspan="6" style="padding:12px;">No approved trainers yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p style="margin-top:18px;"><a class="btn" href="{% url 'admin_dashboard' %}">Back to dashboard</a></p>
+{% endblock %}

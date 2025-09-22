@@ -1,0 +1,37 @@
+{% extends "main/base.html" %}
+{% block title %}Pending Certificates{% endblock %}
+{% block content %}
+<h1>Pending Certificate Submissions</h1>
+
+<p style="margin-bottom:12px;">These submission requests currently have one or more pending certificates. Click a submission to view details.</p>
+
+<table style="width:100%; border-collapse:collapse;">
+  <thead>
+    <tr style="background:#2f6f9e; color:white;">
+      <th style="padding:10px; text-align:left;">Submission ID</th>
+      <th style="padding:10px; text-align:left;">Trainer (mobile)</th>
+      <th style="padding:10px; text-align:left;">Submitted At</th>
+      <th style="padding:10px; text-align:left;">Pending certificates</th>
+      <th style="padding:10px; text-align:left;">Thematic expert(s) required</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in entries %}
+      <tr style="border-bottom:1px solid #e6eef6;">
+        <td style="padding:10px;">{{ e.submission.pk }}</td>
+        <td style="padding:10px;">{{ e.trainer_mobile|default:"-" }}</td>
+        <td style="padding:10px;">{{ e.submission.submitted_at }}</td>
+        <td style="padding:10px;">{{ e.pending_cert_count }}</td>
+        <td style="padding:10px;">
+          {% for u in e.theme_expert_usernames %}
+            <span style="display:inline-block; background:#f0f8ff; padding:4px 8px; margin-right:6px; border-radius:4px;">{{ u }}</span>
+          {% endfor %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6" style="padding:12px;">No pending certificate submissions.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

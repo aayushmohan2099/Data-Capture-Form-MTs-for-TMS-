@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}DC Master{% endblock %}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --deep: #072443;
+      --deep2: #0f3a63;
+      --accent: #fff;
+    }
+    body { font-family: "Helvetica Neue", Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
+    .header {
+      background: linear-gradient(#0b3b5d, #07263f);
+      color: white;
+      text-align:left;
+      padding: 18px 10px;
+      box-shadow: inset 0 -4px 10px rgba(0,0,0,0.25);
+      font-size: 36px;
+      font-weight: 600;
+    }
+    .footer {
+      background: linear-gradient(#07263f, #0b3b5d);
+      color: white;
+      text-align:center;
+      padding: 18px 10px;
+      position: fixed;
+      left:0; right:0; bottom:0;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .container { padding: 28px; max-width:1200px; margin: 0 auto; }
+    .btn {
+      background: #fff;
+      color: #07263f;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    nav {
+      background:linear-gradient(#07345a,#043047);
+      color:white;
+      padding:10px 16px;
+      margin-bottom:18px;
+      border-radius:6px;
+    }
+    nav .btn { padding:6px 10px; font-size:0.9em; }
+    .dropdown { position: relative; display:inline-block; }
+    .dropbtn {
+      background:#07345a;
+      color:white;
+      border:none;
+      cursor:pointer;
+      font-size:14px;
+      padding:6px 10px;
+      border-radius:4px;
+    }
+    .dropbtn:hover { background:#0a4d75; }
+    .dropdown-content {
+      display:none;
+      position:absolute;
+      background:#fff;
+      min-width:180px;
+      box-shadow:0px 4px 8px rgba(0,0,0,0.2);
+      border-radius:4px;
+      z-index:999;
+    }
+    .dropdown-content a {
+      color:#06263a;
+      padding:8px 12px;
+      text-decoration:none;
+      display:block;
+      font-size:14px;
+    }
+    .dropdown-content a:hover { background:#f0f6ff; }
+    .dropdown:hover .dropdown-content { display:block; }
+
+    /* Login page / instructions layout helpers */
+    .row { display:flex; gap:24px; align-items:flex-start; }
+    .left { flex: 2.6; }
+    .right { flex: 1; }
+    .instructions {
+      background: linear-gradient(#083355,#003055);
+      color: white;
+      padding: 28px;
+      min-height: 400px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+    .instructions h2 { font-size: 36px; margin-top: 0; color: #eaf6ff; }
+    .login-card {
+      background: linear-gradient(#0b2b49,#06223a);
+      padding: 22px;
+      color: white;
+      min-height: 260px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      text-align: left;
+    }
+    .login-card h2 { margin-top: 0; font-size: 28px; color:#eaf6ff; }
+    .form-row { margin-bottom: 12px; }
+    .form-row label { display:block; margin-bottom:6px; font-weight:600; color:#dff3ff; }
+    .form-row input, .form-row select {
+      width:100%;
+      padding:8px 10px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+    .small-link { color: #aee3ff; display:block; margin-top:8px; text-decoration:none; }
+    .messages { color: #aee3ff; margin:8px 0 12px; font-weight:600; }
+    @media (max-width:900px){
+      .row { flex-direction: column; }
+      .instructions { font-size: 18px; min-height: auto; }
+      .header { font-size: 28px; padding: 12px; }
+      .footer { font-size: 14px; padding: 12px; position: static; margin-top: 28px; }
+    }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="header">Data Capture form</div>
+
+  {# NAVBAR: only shown when authenticated. Inline role-specific dropdowns (no separate nav files) #}
+  {% if request.user.is_authenticated %}
+  <nav>
+    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
+      <strong style="font-size:18px; margin-right:20px;">
+        {% if request.user.role == 'admin' %} 
+        {% elif request.user.role == 'thematic_expert' %} 
+        {% elif request.user.role == 'master_trainer' %} 
+        {% endif %}
+      </strong>
+
+      {% if request.user.role == 'thematic_expert' %}
+        <a href="{% url 'expert_home' %}" class="btn">Dashboard</a>
+
+        <div class="dropdown">
+          <button class="dropbtn">Master Trainer Management ▾</button>
+          <div class="dropdown-content">
+            <a href="{% url 'expert_approved_trainers' %}">Approved Trainers</a>
+            <a href="{% url 'expert_rejected_trainers' %}">Rejected Trainers</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="dropbtn">User Management ▾</button>
+          <div class="dropdown-content">
+            <a href="{% url 'expert_change_password' %}">Change Password</a>
+            <a href="{% url 'logout' %}">Logout</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="dropbtn">Analytics ▾</button>
+          <div class="dropdown-content">
+            <a href="{% url 'expert_analytics' %}">View Analytics</a>
+          </div>
+        </div>
+
+      {% elif request.user.role == 'master_trainer' %}
+        <a href="{% url 'master_home' %}" class="btn">Dashboard</a>
+
+        <div class="dropdown">
+          <button class="dropbtn">New Submission Request ▾</button>
+          <div class="dropdown-content">
+            <a href="{% url 'capture_submission' %}">Create New</a>
+            <a href="{% url 'master_home' %}">View Sent</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="dropbtn">User Management ▾</button>
+          <div class="dropdown-content">
+            <a href="{% url 'logout' %}">Logout</a>
+          </div>
+        </div>
+
+      {% elif request.user.role == 'admin' %}
+        <a href="{% url 'admin_dashboard' %}" class="btn">Dashboard</a>
+
+        <div class="dropdown">
+          <button class="dropbtn">View Trainers ▾</button>
+          <div class="dropdown-content">
+            <a href="{% url 'admin_approved_trainers' %}">Approved</a>
+            <a href="{% url 'admin_rejected_trainers' %}">Rejected</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="dropbtn">Submission List ▾</button>
+          <div class="dropdown-content">
+            <a href="{% url 'admin_all_submissions' %}">All Submissions</a>
+            <a href="{% url 'admin_pending_certificates' %}">Pending Certificates</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="dropbtn">User Management ▾</button>
+          <div class="dropdown-content">
+            <a href="{% url 'admin_users_list' %}">All Users</a>
+            <a href="{% url 'admin_change_password' %}">Change Password</a>
+            <a href="{% url 'logout' %}">Logout</a>
+          </div>
+        </div>
+
+      {% endif %}
+
+      <div style="margin-left:auto; color:#cfe7ff;">
+        Signed in as: {{ request.user.get_full_name|default:request.user.username }}
+      </div>
+    </div>
+  </nav>
+  {% endif %}
+
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+  <div class="footer">Site operated and maintained by Managed Service Provider</div>
+</body>
+</html>

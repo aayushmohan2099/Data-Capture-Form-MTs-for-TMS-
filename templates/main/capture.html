@@ -1,0 +1,506 @@
+{% extends "main/base.html" %}
+{% block title %}Capture Submission{% endblock %}
+
+{% block content %}
+<style>
+/* --- Page header --- */
+.capture-header {
+  text-align: center;
+  margin: 18px 0 8px;
+}
+.capture-title {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-size: 36px;
+  letter-spacing: 2px;
+  color: #2b6fb2;
+  text-shadow: 0 6px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.15);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.capture-sub {
+  text-align: center;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* --- Layout container --- */
+.capture-wrap {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 24px;
+}
+
+/* --- Two-column layout --- */
+.capture-main {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+.form-col { flex: 1 1 680px; min-width: 300px; }
+.side-col { width: 360px; min-width: 260px; }
+
+/* --- Tabs --- */
+.tabs { display: flex; gap: 8px; margin-bottom: 0; }
+.tab-btn {
+  appearance: none;
+  background: linear-gradient(#dfefff, #b8d6f6);
+  border: 1px solid rgba(0,0,0,0.12);
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 2px 2px 0 0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.tab-btn.active {
+  background: linear-gradient(#3b77b6, #155b93);
+  color: white;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+}
+
+/* --- Panel --- */
+.panel {
+  background: linear-gradient(#2d6aa0, #214b6f);
+  padding: 26px;
+  border-radius: 2px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+  color: white;
+}
+.panel-inner {
+  background: linear-gradient(#eaf1fb, #d6e7fb);
+  color: #111;
+  padding: 22px;
+  border-radius: 2px;
+}
+#panel-heading {
+  font-size: 26px;
+  color: #fff;
+  margin: 0 0 12px;
+  text-align: center;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.2);
+}
+
+/* --- Table layout --- */
+.form-table { width: 100%; border-collapse: collapse; }
+.form-table .label-cell {
+  font-weight: 700; width: 40%;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.06);
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+.form-table .input-cell {
+  padding: 10px 12px;
+  border-top: 1px solid rgba(0,0,0,0.03);
+}
+.form-table input[type="text"],
+.form-table input[type="date"],
+.form-table select,
+.form-table textarea {
+  width: 96%;
+  padding: 6px 8px;
+  border: 1px solid #c9d6e8;
+  border-radius: 2px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* --- Certificate rows: theme/module top, rest stacked vertically --- */
+.cert-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Theme | Module */
+  gap: 8px;
+  align-items: start;
+  background: rgba(255,255,255,0.95);
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.06);
+  margin-bottom: 12px;
+}
+.cert-row .stack {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.cert-row label { font-size:13px; color:#222; }
+.cert-row select,
+.cert-row input[type="text"],
+.cert-row input[type="date"] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #c9d6e8;
+  border-radius: 3px;
+  background: white;
+}
+.cert-row .file-row {
+  display:flex;
+  gap:12px;
+  justify-content:flex-end;
+  align-items:center;
+}
+.cert-row input[type="file"] { max-width:220px; }
+.remove-cert-btn {
+  background: linear-gradient(#f6f6f6,#e6e6e6);
+  border: 1px solid rgba(0,0,0,0.12);
+  padding: 6px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight:600;
+}
+@media (max-width:640px) {
+  .cert-row { grid-template-columns: 1fr; }
+  .cert-row .file-row { justify-content:flex-start; }
+}
+
+/* --- Tips --- */
+.tips {
+  background: #0b3550;
+  color: #fff;
+  padding: 18px;
+  border-radius: 2px;
+  box-shadow: inset 0 -20px 0 rgba(0,0,0,0.06);
+}
+.tips h3 { margin-top: 0; }
+.tips ul { margin-left: 18px; }
+
+/* --- Wizard buttons --- */
+.wizard-actions {
+  display: flex; gap: 18px;
+  justify-content: center;
+  margin-top: 16px;
+}
+.fancy-btn {
+  background: linear-gradient(#4aa1e8, #2a6fb0);
+  color: white; border: none;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-size: 20px; font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 0 rgba(20,70,110,0.45), 0 0 18px rgba(45,185,255,0.18);
+  cursor: pointer;
+}
+.fancy-btn.reset {
+  background: linear-gradient(#9cccf2,#6a9fcf);
+  box-shadow: 0 6px 0 rgba(50,90,140,0.3), 0 0 18px rgba(100,200,255,0.14);
+}
+
+/* Flash/errors */
+.flash-messages .flash { padding: 8px 10px; margin-bottom: 8px; border-radius: 2px; }
+.form-errors { background: #ffecec; color: #7a0000; padding: 8px 10px; border-radius: 2px; margin-bottom:12px; }
+</style>
+
+<div class="capture-wrap">
+  <div class="capture-header">
+    <div class="capture-title">Create New Submission Request</div>
+    <div class="capture-sub">Use the tabs to fill details. Once you submit, your request will be pending for thematic expert review.</div>
+  </div>
+
+  <div class="capture-main">
+    <div class="form-col">
+      <div class="tabs" role="tablist" aria-label="Form tabs">
+        <button class="tab-btn active" data-target="tab-basic" type="button">Basic</button>
+        <button class="tab-btn" data-target="tab-banking" type="button">Banking</button>
+        <button class="tab-btn" data-target="tab-certificates" type="button">Certificates</button>
+        <button class="tab-btn" data-target="tab-achievements" type="button">Achievements</button>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        {% if messages %}
+          <div class="flash-messages">
+            {% for message in messages %}
+              <div class="flash {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+          <div class="form-errors">
+            <ul>
+              {% for err in form.non_field_errors %}
+                <li>{{ err }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <div class="panel">
+          <h3 id="panel-heading">Basic Identification</h3>
+
+          <div class="panel-inner">
+            <!-- Tab panes -->
+            <div id="tab-basic" class="tab" style="display:block;">
+              <table class="form-table">
+                <tbody>
+                  <tr><td class="label-cell">{{ form.full_name.label_tag }}</td><td class="input-cell">{{ form.full_name }}</td></tr>
+                  <tr><td class="label-cell">{{ form.date_of_birth.label_tag }}</td><td class="input-cell">{{ form.date_of_birth }}</td></tr>
+                  <tr><td class="label-cell">{{ form.mobile_no.label_tag }}</td><td class="input-cell">{{ form.mobile_no }}</td></tr>
+                  <tr><td class="label-cell">{{ form.aadhaar_no.label_tag }}</td><td class="input-cell">{{ form.aadhaar_no }}</td></tr>
+                  <tr><td class="label-cell">{{ form.empanel_district.label_tag }}</td><td class="input-cell">{{ form.empanel_district }}</td></tr>
+                  <tr><td class="label-cell">{{ form.social_category.label_tag }}</td><td class="input-cell">{{ form.social_category }}</td></tr>
+                  <tr><td class="label-cell">{{ form.gender.label_tag }}</td><td class="input-cell">{{ form.gender }}</td></tr>
+                  <tr><td class="label-cell">{{ form.education.label_tag }}</td><td class="input-cell">{{ form.education }}</td></tr>
+                  <tr><td class="label-cell">{{ form.marital_status.label_tag }}</td><td class="input-cell">{{ form.marital_status }}</td></tr>
+                  <tr><td class="label-cell">{{ form.parent_or_spouse_name.label_tag }}</td><td class="input-cell">{{ form.parent_or_spouse_name }}</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div id="tab-banking" class="tab" style="display:none;">
+              <table class="form-table">
+                <tbody>
+                  <tr><td class="label-cell">{{ form.bank_account_number.label_tag }}</td><td class="input-cell">{{ form.bank_account_number }}</td></tr>
+                  <tr><td class="label-cell">{{ form.ifsc.label_tag }}</td><td class="input-cell">{{ form.ifsc }}</td></tr>
+                  <tr><td class="label-cell">{{ form.branch_name.label_tag }}</td><td class="input-cell">{{ form.branch_name }}</td></tr>
+                  <tr><td class="label-cell">{{ form.bank_name.label_tag }}</td><td class="input-cell">{{ form.bank_name }}</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div id="tab-certificates" class="tab" style="display:none;">
+              <p>Select the theme and module for each certificate you upload. Click “Add certificate” to add another row.</p>
+              <div id="certificates-container"></div>
+              <div style="margin-top:12px;">
+                <button type="button" id="add-cert-btn" class="btn">Add certificate</button>
+              </div>
+
+              <script>
+                // certificate UI helper - uses themes & modules_by_theme_json from context
+                const modulesByTheme = {{ modules_by_theme_json|safe }};
+
+                function normThemeKey(t) { return t ? String(t).trim().toLowerCase() : ''; }
+
+                function populateModuleSelect(moduleSelect, theme) {
+                  moduleSelect.innerHTML = '';
+                  const empty = document.createElement('option');
+                  empty.value = '';
+                  empty.textContent = '-- Select module --';
+                  moduleSelect.appendChild(empty);
+                  const list = modulesByTheme[normThemeKey(theme)] || [];
+                  for (const m of list) {
+                    const opt = document.createElement('option');
+                    opt.value = m.id;
+                    opt.textContent = m.name;
+                    moduleSelect.appendChild(opt);
+                  }
+                }
+
+                function makeCertRow(index, preTheme, preModule, preNum, preIssuing, preIssuedOn) {
+                  const wrapper = document.createElement('div');
+                  wrapper.className = 'cert-row';
+                  wrapper.dataset.index = index;
+
+                  // Theme (left)
+                  const themeLabel = document.createElement('label');
+                  themeLabel.innerHTML = '<div style="font-weight:700;margin-bottom:4px;">Theme</div>';
+                  const themeSelect = document.createElement('select');
+                  themeSelect.name = `certs-${index}-theme`;
+                  themeSelect.className = 'theme-select';
+                  const defT = document.createElement('option'); defT.value=''; defT.textContent='-- Select theme --';
+                  themeSelect.appendChild(defT);
+                  {% for t in themes %}
+                    const optT_{{ forloop.counter0 }} = document.createElement('option');
+                    optT_{{ forloop.counter0 }}.value = "{{ t|escapejs }}";
+                    optT_{{ forloop.counter0 }}.textContent = "{{ t|escapejs }}";
+                    themeSelect.appendChild(optT_{{ forloop.counter0 }});
+                  {% endfor %}
+                  if (preTheme) themeSelect.value = preTheme;
+                  themeLabel.appendChild(themeSelect);
+                  wrapper.appendChild(themeLabel);
+
+                  // Module (right)
+                  const moduleLabel = document.createElement('label');
+                  moduleLabel.innerHTML = '<div style="font-weight:700;margin-bottom:4px;">Module</div>';
+                  const moduleSelect = document.createElement('select');
+                  moduleSelect.name = `certs-${index}-module`;
+                  moduleSelect.className = 'module-select';
+                  const defM = document.createElement('option'); defM.value=''; defM.textContent='-- Select module --';
+                  moduleSelect.appendChild(defM);
+                  moduleLabel.appendChild(moduleSelect);
+                  wrapper.appendChild(moduleLabel);
+
+                  // stacked fields (span full width)
+                  const stack = document.createElement('div'); stack.className = 'stack';
+
+                  // certificate number
+                  const numLabel = document.createElement('label');
+                  numLabel.innerHTML = '<div style="font-weight:700;">Certificate No.</div>';
+                  const numInput = document.createElement('input'); numInput.type='text';
+                  numInput.name = `certs-${index}-number`; numInput.value = preNum || '';
+                  numLabel.appendChild(numInput); stack.appendChild(numLabel);
+
+                  // issuing authority
+                  const issuingLabel = document.createElement('label');
+                  issuingLabel.innerHTML = '<div style="font-weight:700;">Issuing authority</div>';
+                  const issuingInput = document.createElement('input'); issuingInput.type='text';
+                  issuingInput.name = `certs-${index}-issuing`; issuingInput.value = preIssuing || '';
+                  issuingLabel.appendChild(issuingInput); stack.appendChild(issuingLabel);
+
+                  // issued on
+                  const issuedOnLabel = document.createElement('label');
+                  issuedOnLabel.innerHTML = '<div style="font-weight:700;">Issued on</div>';
+                  const issuedOnInput = document.createElement('input'); issuedOnInput.type='date';
+                  issuedOnInput.name = `certs-${index}-issued_on`; if (preIssuedOn) issuedOnInput.value = preIssuedOn;
+                  issuedOnLabel.appendChild(issuedOnInput); stack.appendChild(issuedOnLabel);
+
+                  // file + remove row
+                  const fileRow = document.createElement('div'); fileRow.className = 'file-row';
+                  const fileLabel = document.createElement('label');
+                  fileLabel.innerHTML = '<div style="font-weight:700;">Certificate file</div>';
+                  const fileInput = document.createElement('input'); fileInput.type='file';
+                  fileInput.name = `certs-${index}-file`; fileInput.accept = '.pdf,image/*';
+                  fileLabel.appendChild(fileInput); fileRow.appendChild(fileLabel);
+
+                  const removeBtn = document.createElement('button');
+                  removeBtn.type = 'button'; removeBtn.className = 'remove-cert-btn'; removeBtn.textContent = 'Remove';
+                  removeBtn.addEventListener('click', function() { wrapper.remove(); ensureRemoveButtons(); });
+                  fileRow.appendChild(removeBtn);
+
+                  stack.appendChild(fileRow);
+                  wrapper.appendChild(stack);
+
+                  // behavior
+                  themeSelect.addEventListener('change', function() { populateModuleSelect(moduleSelect, themeSelect.value); });
+
+                  if (preTheme) {
+                    populateModuleSelect(moduleSelect, preTheme);
+                    if (preModule) { setTimeout(()=>{ moduleSelect.value = String(preModule); }, 0); }
+                  }
+
+                  return wrapper;
+                }
+
+                function ensureRemoveButtons() {
+                  const rows = document.querySelectorAll('#certificates-container .cert-row');
+                  rows.forEach(r => {
+                    const btn = r.querySelector('.remove-cert-btn');
+                    if (btn) btn.style.display = rows.length === 1 ? 'none' : '';
+                  });
+                }
+
+                (function initCertificatesUI(){
+                  const container = document.getElementById('certificates-container');
+                  let nextIndex = 0;
+                  const existing = container.querySelector('.cert-row');
+                  if (existing) {
+                    const preTheme = existing.querySelector('.theme-select')?.value || '';
+                    const preModule = existing.querySelector('.module-select')?.value || '';
+                    const preNum = existing.querySelector('input[name$="-number"]')?.value || '';
+                    const preIss = existing.querySelector('input[name$="-issuing"]')?.value || '';
+                    const preIssued = existing.querySelector('input[name$="-issued_on"]')?.value || '';
+                    const newRow = makeCertRow(nextIndex++, preTheme, preModule, preNum, preIss, preIssued);
+                    container.replaceChild(newRow, existing);
+                  } else {
+                    container.appendChild(makeCertRow(nextIndex++));
+                  }
+
+                  document.getElementById('add-cert-btn').addEventListener('click', function(){
+                    container.appendChild(makeCertRow(nextIndex++));
+                    ensureRemoveButtons();
+                  });
+
+                  ensureRemoveButtons();
+                })();
+              </script>
+            </div>
+
+            <div id="tab-achievements" class="tab" style="display:none;">
+              <table class="form-table">
+                <tbody>
+                  <tr><td class="label-cell">{{ form.other_achievements.label_tag }}</td><td class="input-cell">{{ form.other_achievements }}</td></tr>
+                  <tr><td class="label-cell">{{ form.success_stories.label_tag }}</td><td class="input-cell">{{ form.success_stories }}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div> <!-- .panel-inner -->
+        </div> <!-- .panel -->
+
+        <div class="wizard-actions" aria-hidden="false">
+          <button type="button" id="prevBtn" class="btn" style="display:none;">Previous</button>
+          <button type="button" id="nextBtn" class="btn">Next</button>
+
+          <!-- Submit & Reset -->
+          <button type="submit" id="submitBtn" class="fancy-btn" style="display:none;">Submit</button>
+          <button type="reset" id="resetBtn" class="fancy-btn reset" style="display:none;">Reset</button>
+        </div>
+
+        <script>
+          // run wiring after DOM ready so headings and tabs always update
+          document.addEventListener('DOMContentLoaded', function() {
+            // normalize DOB on submit
+            document.querySelector('form').addEventListener('submit', function(e){
+              const el = document.querySelector('input[name="date_of_birth"]');
+              if (!el) return;
+              const v = el.value.trim();
+              if (v && v.indexOf('/') !== -1) {
+                const parts = v.split('/');
+                if (parts.length === 3) {
+                  const dd = parts[0].padStart(2,'0');
+                  const mm = parts[1].padStart(2,'0');
+                  const yyyy = parts[2];
+                  el.value = `${yyyy}-${mm}-${dd}`;
+                }
+              }
+            });
+
+            // tab + heading logic
+            const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+            const tabs = Array.from(document.querySelectorAll('.tab'));
+            let current = 0;
+
+            function getPanelHeadingForTab(index) {
+              return [
+                'Basic Identification',
+                'Bank details',
+                'Certificates',
+                'Achievements & Success Stories'
+              ][index] || 'Details';
+            }
+
+            function showTab(i){
+              tabs.forEach((t,idx)=> t.style.display = idx===i ? 'block' : 'none');
+              tabBtns.forEach((b,idx)=> b.classList.toggle('active', idx===i));
+              document.getElementById('prevBtn').style.display = i===0 ? 'none' : 'inline-block';
+              document.getElementById('nextBtn').style.display = i===tabs.length-1 ? 'none' : 'inline-block';
+              const submit = document.getElementById('submitBtn');
+              const reset = document.getElementById('resetBtn');
+              if (i===tabs.length-1) {
+                submit.style.display = 'inline-block';
+                reset.style.display = 'inline-block';
+              } else {
+                submit.style.display = 'none';
+                reset.style.display = 'none';
+              }
+              const headingEl = document.getElementById('panel-heading');
+              if (headingEl) headingEl.textContent = getPanelHeadingForTab(i);
+            }
+
+            tabBtns.forEach((b, idx) => b.addEventListener('click', ()=> { current = idx; showTab(current); }));
+            document.getElementById('prevBtn').addEventListener('click', ()=> { if(current>0){ current--; showTab(current);} });
+            document.getElementById('nextBtn').addEventListener('click', ()=> { if(current<tabs.length-1){ current++; showTab(current);} });
+
+            // keyboard-friendly role
+            tabBtns.forEach(b => b.setAttribute('role','tab'));
+
+            // initial show
+            showTab(0);
+          });
+        </script>
+      </form>
+    </div>
+
+    <div class="side-col">
+      <div class="tips">
+        <h3>Tips</h3>
+        <ul>
+          <li>Fill accurate mobile number — this will be used for login.</li>
+          <li>Upload clear certificate scans (pdf, jpg, png).</li>
+          <li>If the expert rejects, they will provide a reason — you can edit and resubmit.</li>
+        </ul>
+        <p><a href="{% url 'master_home' %}" class="btn" style="background:#fff; color:#0b3550; border-radius:4px; padding:8px 10px; text-decoration:none;">My Submissions</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

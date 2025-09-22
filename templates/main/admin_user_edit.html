@@ -1,0 +1,21 @@
+{% extends "main/base.html" %}
+{% block title %}Edit User{% endblock %}
+{% block content %}
+<h1>Edit {{ user_obj.username }}</h1>
+
+<h3>Update details</h3>
+<form method="post">{% csrf_token %}
+  <input type="hidden" name="update_profile" value="1">
+  {{ form.as_p }}
+  <button class="btn" type="submit">Save</button>
+</form>
+
+<h3>Reset / Change password</h3>
+<form method="post">{% csrf_token %}
+  <input type="hidden" name="set_password" value="1">
+  {{ pwd_form.as_p }}
+  <button class="btn" type="submit">Update password</button>
+</form>
+
+<p><a href="{% url 'admin_users_list' %}">Back to list</a></p>
+{% endblock %}

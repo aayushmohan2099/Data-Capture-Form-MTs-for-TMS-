@@ -1,0 +1,191 @@
+{% extends "main/base.html" %}
+{% block title %}Thematic Expert Home{% endblock %}
+{% block content %}
+<style>
+/* Page heading */
+.expert-dashboard {
+  text-align: center;
+  margin: 18px 0 8px;
+}
+.expert-dashboard .bigtitle {
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  font-size: 44px;
+  letter-spacing: 3px;
+  color: #2b6fb2;
+  text-transform: uppercase;
+  margin: 6px 0 18px;
+  text-shadow: 0 8px 0 rgba(255,255,255,0.18), 0 3px 10px rgba(0,0,0,0.15);
+}
+.expert-metadata {
+  display:flex;
+  justify-content:space-between;
+  max-width:1200px;
+  margin: 0 auto 18px;
+  padding: 0 12px;
+  color:#222;
+  font-weight:700;
+}
+
+/* Submissions list title */
+.submissions-title {
+  text-align:center;
+  font-size:30px;
+  color:#2b6fb2;
+  margin: 26px 0 18px;
+  text-shadow: 0 6px 0 rgba(255,255,255,0.18);
+}
+
+/* Card style */
+.submission-card {
+  max-width: 1100px;
+  margin: 18px auto;
+  background: linear-gradient(#16325a, #17345f);
+  color: #fff;
+  border-radius: 28px;
+  padding: 28px 32px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 3px solid rgba(255,255,255,0.04);
+}
+
+/* top row: name left / meta right */
+.card-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap: 12px;
+}
+.card-top .trainer {
+  font-size: 20px;
+  font-weight: 800;
+}
+.card-top .trainer small { font-weight:600; color:rgba(255,255,255,0.9); }
+
+/* right meta */
+.card-top .meta {
+  text-align:right;
+  font-size: 16px;
+  line-height:1.5;
+}
+
+/* middle / message */
+.card-body {
+  display:flex;
+  justify-content:space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.card-body .message {
+  font-size:18px;
+  font-weight:700;
+  color: rgba(255,255,255,0.95);
+}
+
+/* action */
+.card-action {
+  display:flex;
+  justify-content:center;
+  margin-top: 6px;
+}
+.card-action .open-btn {
+  background: #fff;
+  color: #0b3550;
+  padding: 10px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+}
+
+/* list inside card (certs) */
+.card-certs {
+  margin: 0;
+  padding-left: 18px;
+}
+.card-certs li {
+  margin: 6px 0;
+  color: rgba(255,255,255,0.95);
+  font-weight:600;
+}
+
+/* Empty state */
+.empty-state {
+  max-width:900px;
+  margin: 40px auto;
+  text-align:center;
+  color:#444;
+  font-size:18px;
+  padding: 18px;
+  border-radius:6px;
+  background: #fafafa;
+  border:1px solid #eee;
+}
+
+/* responsive */
+@media (max-width:900px){
+  .card-top { flex-direction: column; align-items: flex-start; }
+  .card-top .meta { text-align:left; }
+  .card-body { flex-direction:column; align-items:flex-start; }
+  .card-action { width:100%; display:flex; justify-content:flex-start; }
+}
+</style>
+
+<div class="expert-dashboard">
+  <div class="bigtitle">Thematic Expert Dashboard</div>
+  <div class="expert-metadata">
+    <div>Expert: {{ request.user.username }}</div>
+    {# If you have a theme variable, it will show; otherwise leave blank #}
+    {% for submission, certs, theme in groups %}
+    <div style="text-align:right;">Theme: {% if theme %}{{ theme }}{% else %}—{% endif %}</div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="submissions-title">Submissions List</div>
+
+{% for submission, certs, theme in groups %}
+  <article class="submission-card" role="article" aria-labelledby="sub-{{ submission.pk }}">
+    <div class="card-top">
+      <div class="trainer" id="sub-{{ submission.pk }}">
+        {{ submission.trainer.full_name }} <small>({{ submission.trainer.mobile_no }})</small>
+      </div>
+
+      <div class="meta">
+        <div>Submitted at: {{ submission.submitted_at }}</div>
+        <div style="margin-top:8px;">Theme: {% if theme %}{{ theme }}{% else %}—{% endif %}</div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="message">Pending Certificates for your review!</div>
+
+      <ul class="card-certs">
+        {% for c in certs %}
+          <li>
+            {% if c.certificate_file %}
+              <a href="{{ c.certificate_file.url }}" target="_blank" style="color:#cfe9ff; text-decoration:underline;">File</a>
+            {% else %}
+              <span style="opacity:0.9;">No file</span>
+            {% endif %}
+            — Module:
+            {% if c.training_module %}
+              {{ c.training_module.training_name }}
+            {% else %}
+              Not assigned
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="card-action">
+      <a class="open-btn" href="{% url 'expert_submission_detail' submission.pk %}">Open for review</a>
+    </div>
+  </article>
+{% empty %}
+  <div class="empty-state">No submissions currently assigned to you.</div>
+{% endfor %}
+{% endblock %}
