@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'dcmaster.urls'
@@ -127,6 +128,9 @@ STATICFILES_DIRS = [
 # Where `collectstatic` will copy all static files for production
 # EB / Gunicorn will serve files from here via nginx + WhiteNoise (or your S3 config)
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Use WhiteNoise's storage so static files are served with correct hashed names
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media (user uploads)
 MEDIA_URL = '/media/'
