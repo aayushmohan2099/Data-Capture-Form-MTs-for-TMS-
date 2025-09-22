@@ -116,12 +116,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  
-]
-MEDIA_URL = '/media/'
+STATIC_URL = '/static/'
 
+# Local static source directories (optional — create them if you reference them)
+# Keep this if you have a 'static' folder in project root used during development.
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# Where `collectstatic` will copy all static files for production
+# EB / Gunicorn will serve files from here via nginx + WhiteNoise (or your S3 config)
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Media (user uploads)
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
