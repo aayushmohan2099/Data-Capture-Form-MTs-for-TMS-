@@ -1,0 +1,4 @@
+Retrieving logs...
+Logs were saved to /home/ayushth/04-09-25/dcmaster/.elasticbeanstalk/logs/250922_165704
+Logs were saved to /home/ayushth/04-09-25/dcmaster/.elasticbeanstalk/logs/250922_165704
+Updated symlink at /home/ayushth/04-09-25/dcmaster/.elasticbeanstalk/logs/latest

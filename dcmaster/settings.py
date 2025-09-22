@@ -149,3 +149,21 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "")
 AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME", "ap-south-1")
 AWS_QUERYSTRING_AUTH = True  # signed URLs
+
+# Trust CloudFront and the EB origin for CSRF
+CSRF_TRUSTED_ORIGINS = [
+    "https://d1k9ap73qc23md.cloudfront.net",
+    "https://dcmaster-env.eba-vwhhcmmq.ap-south-1.elasticbeanstalk.com",
+]
+
+# Tell Django it's behind a secure proxy (CloudFront -> origin)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Secure cookie settings for HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Allow cookies to be sent even across sites (CloudFront -> origin sometimes treats it as cross-site)
+# If you use SameSite=None you must have secure cookies (we set CSRF/SESSION_COOKIE_SECURE above)
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
