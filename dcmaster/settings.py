@@ -113,6 +113,27 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Django >=5 prefers `STORAGES`
+STORAGES = {
+    "default": {
+        "BACKEND": os.environ.get(
+            "DJANGO_DEFAULT_FILE_STORAGE_BACKEND",
+            "storages.backends.s3boto3.S3Boto3Storage",
+        )
+    },
+    "staticfiles": {
+        "BACKEND": os.environ.get(
+            "DJANGO_STATICFILES_STORAGE_BACKEND",
+            "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        )
+    },
+}
+
+DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
+STATICFILES_STORAGE = os.environ.get(
+    "DJANGO_STATICFILES_STORAGE_BACKEND",
+    STORAGES["staticfiles"]["BACKEND"],
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
@@ -129,11 +150,7 @@ STATICFILES_DIRS = [
 # EB / Gunicorn will serve files from here via nginx + WhiteNoise (or your S3 config)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Use WhiteNoise's storage so static files are served with correct hashed names
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 # Media (user uploads)
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
@@ -143,9 +160,6 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'main.User'
-
-# Use S3 for media uploads
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # S3 / CloudFront config (read from environment)
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "").strip()
@@ -162,7 +176,6 @@ AWS_QUERYSTRING_AUTH = _env_bool("AWS_QUERYSTRING_AUTH", default=False)
 AWS_DEFAULT_ACL = None
 
 if AWS_STORAGE_BUCKET_NAME:
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     if AWS_S3_CUSTOM_DOMAIN:
         MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN.rstrip('/')}/"
     else:
