@@ -75,11 +75,118 @@ class MasterTrainer(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     mobile_no = models.CharField("Mobile No.", max_length=20, blank=True, null=True, db_index=True)
     aadhaar_no = models.CharField("Aadhaar No", max_length=20, blank=True, null=True)
-    empanel_district = models.CharField("Empanel District", max_length=255, blank=True, null=True)
-    social_category = models.CharField("Social Category", max_length=50, blank=True, null=True)
-    gender = models.CharField(max_length=20, blank=True, null=True)
-    education = models.CharField(max_length=200, blank=True, null=True)
-    marital_status = models.CharField(max_length=50, blank=True, null=True)
+
+    DISTRICT_CHOICES = [
+        ('Agra', 'Agra'),
+        ('Aligarh', 'Aligarh'),
+        ('Allahabad (Prayagraj)', 'Allahabad (Prayagraj)'),
+        ('Ambedkar Nagar', 'Ambedkar Nagar'),
+        ('Amethi', 'Amethi'),
+        ('Amroha', 'Amroha'),
+        ('Auraiya', 'Auraiya'),
+        ('Azamgarh', 'Azamgarh'),
+        ('Baghpat', 'Baghpat'),
+        ('Bahraich', 'Bahraich'),
+        ('Ballia', 'Ballia'),
+        ('Balrampur', 'Balrampur'),
+        ('Banda', 'Banda'),
+        ('Barabanki', 'Barabanki'),
+        ('Bareilly', 'Bareilly'),
+        ('Basti', 'Basti'),
+        ('Bhadohi (Sant Ravidas Nagar)', 'Bhadohi (Sant Ravidas Nagar)'),
+        ('Bijnor', 'Bijnor'),
+        ('Budaun', 'Budaun'),
+        ('Bulandshahr', 'Bulandshahr'),
+        ('Chandauli', 'Chandauli'),
+        ('Chitrakoot', 'Chitrakoot'),
+        ('Deoria', 'Deoria'),
+        ('Etah', 'Etah'),
+        ('Etawah', 'Etawah'),
+        ('Faizabad (Ayodhya)', 'Faizabad (Ayodhya)'),
+        ('Farrukhabad', 'Farrukhabad'),
+        ('Fatehpur', 'Fatehpur'),
+        ('Firozabad', 'Firozabad'),
+        ('Gautam Buddha Nagar (Noida)', 'Gautam Buddha Nagar (Noida)'),
+        ('Ghaziabad', 'Ghaziabad'),
+        ('Ghazipur', 'Ghazipur'),
+        ('Gonda', 'Gonda'),
+        ('Gorakhpur', 'Gorakhpur'),
+        ('Hamirpur', 'Hamirpur'),
+        ('Hapur', 'Hapur'),
+        ('Hardoi', 'Hardoi'),
+        ('Hathras', 'Hathras'),
+        ('Jalaun', 'Jalaun'),
+        ('Jaunpur', 'Jaunpur'),
+        ('Jhansi', 'Jhansi'),
+        ('Kannauj', 'Kannauj'),
+        ('Kanpur Dehat', 'Kanpur Dehat'),
+        ('Kanpur Nagar', 'Kanpur Nagar'),
+        ('Kasganj', 'Kasganj'),
+        ('Kaushambi', 'Kaushambi'),
+        ('Kushinagar', 'Kushinagar'),
+        ('Lakhimpur Kheri', 'Lakhimpur Kheri'),
+        ('Lalitpur', 'Lalitpur'),
+        ('Lucknow', 'Lucknow'),
+        ('Maharajganj', 'Maharajganj'),
+        ('Mahoba', 'Mahoba'),
+        ('Mainpuri', 'Mainpuri'),
+        ('Mathura', 'Mathura'),
+        ('Mau', 'Mau'),
+        ('Meerut', 'Meerut'),
+        ('Mirzapur', 'Mirzapur'),
+        ('Moradabad', 'Moradabad'),
+        ('Muzaffarnagar', 'Muzaffarnagar'),
+        ('Pilibhit', 'Pilibhit'),
+        ('Pratapgarh', 'Pratapgarh'),
+        ('Rae Bareli', 'Rae Bareli'),
+        ('Rampur', 'Rampur'),
+        ('Saharanpur', 'Saharanpur'),
+        ('Sant Kabir Nagar', 'Sant Kabir Nagar'),
+        ('Sant Ravidas Nagar', 'Sant Ravidas Nagar'),
+        ('Shahjahanpur', 'Shahjahanpur'),
+        ('Shamli', 'Shamli'),
+        ('Shravasti', 'Shravasti'),
+        ('Siddharthnagar', 'Siddharthnagar'),
+        ('Sitapur', 'Sitapur'),
+        ('Sonbhadra', 'Sonbhadra'),
+        ('Sultanpur', 'Sultanpur'),
+        ('Unnao', 'Unnao'),
+        ('Varanasi', 'Varanasi'),
+    ]
+
+    empanel_district = models.CharField("Empanel District", max_length=255, choices =DISTRICT_CHOICES, blank=True, null=True)
+
+    CATEGORY_CHOICES = [
+        ('UR', 'General/Unreserved (UR)'),
+        ('SC', 'Scheduled Castes (SC)'),
+        ('ST', 'Scheduled Tribe (ST)'),
+        ('OBC', 'Other Backward Class (OBC)')
+    ]
+
+    social_category = models.CharField("Social Category", max_length=50, choices=CATEGORY_CHOICES, blank=True, null=True)
+    
+    GENDER_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Others', 'Others')
+    ]
+
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, null=True)
+
+    EDUCATION_CHOICES =[
+        ('Under Graduate (UG)', 'Under Graduate (UG)'),
+        ('Post Graduate (PG)', 'Post Graduate (PG)')
+    ]
+
+    education = models.CharField(max_length=200, choices=EDUCATION_CHOICES, blank=True, null=True)
+    
+    MARITAL_CHOICES = [
+        ('Married', 'Married'),
+        ('Unmarried', 'Unmarried'),
+        ('Divorced/Widowed', 'Divorced/Widowed')
+    ]
+
+    marital_status = models.CharField(max_length=50, choices=MARITAL_CHOICES, blank=True, null=True)
     parent_or_spouse_name = models.CharField("Father/Mother/Spouse Name", max_length=200, blank=True, null=True)
     
     # Designation: DRP / SRP
@@ -125,11 +232,117 @@ class MasterTrainerSubmission(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     mobile_no = models.CharField("Mobile No.", max_length=20, blank=True, null=True)
     aadhaar_no = models.CharField("Aadhaar No", max_length=20, blank=True, null=True)
-    empanel_district = models.CharField("Empanel District", max_length=255, blank=True, null=True)
-    social_category = models.CharField("Social Category", max_length=50, blank=True, null=True)
-    gender = models.CharField(max_length=20, blank=True, null=True)
-    education = models.CharField(max_length=200, blank=True, null=True)
-    marital_status = models.CharField(max_length=50, blank=True, null=True)
+    DISTRICT_CHOICES = [
+        ('Agra', 'Agra'),
+        ('Aligarh', 'Aligarh'),
+        ('Allahabad (Prayagraj)', 'Allahabad (Prayagraj)'),
+        ('Ambedkar Nagar', 'Ambedkar Nagar'),
+        ('Amethi', 'Amethi'),
+        ('Amroha', 'Amroha'),
+        ('Auraiya', 'Auraiya'),
+        ('Azamgarh', 'Azamgarh'),
+        ('Baghpat', 'Baghpat'),
+        ('Bahraich', 'Bahraich'),
+        ('Ballia', 'Ballia'),
+        ('Balrampur', 'Balrampur'),
+        ('Banda', 'Banda'),
+        ('Barabanki', 'Barabanki'),
+        ('Bareilly', 'Bareilly'),
+        ('Basti', 'Basti'),
+        ('Bhadohi (Sant Ravidas Nagar)', 'Bhadohi (Sant Ravidas Nagar)'),
+        ('Bijnor', 'Bijnor'),
+        ('Budaun', 'Budaun'),
+        ('Bulandshahr', 'Bulandshahr'),
+        ('Chandauli', 'Chandauli'),
+        ('Chitrakoot', 'Chitrakoot'),
+        ('Deoria', 'Deoria'),
+        ('Etah', 'Etah'),
+        ('Etawah', 'Etawah'),
+        ('Faizabad (Ayodhya)', 'Faizabad (Ayodhya)'),
+        ('Farrukhabad', 'Farrukhabad'),
+        ('Fatehpur', 'Fatehpur'),
+        ('Firozabad', 'Firozabad'),
+        ('Gautam Buddha Nagar (Noida)', 'Gautam Buddha Nagar (Noida)'),
+        ('Ghaziabad', 'Ghaziabad'),
+        ('Ghazipur', 'Ghazipur'),
+        ('Gonda', 'Gonda'),
+        ('Gorakhpur', 'Gorakhpur'),
+        ('Hamirpur', 'Hamirpur'),
+        ('Hapur', 'Hapur'),
+        ('Hardoi', 'Hardoi'),
+        ('Hathras', 'Hathras'),
+        ('Jalaun', 'Jalaun'),
+        ('Jaunpur', 'Jaunpur'),
+        ('Jhansi', 'Jhansi'),
+        ('Kannauj', 'Kannauj'),
+        ('Kanpur Dehat', 'Kanpur Dehat'),
+        ('Kanpur Nagar', 'Kanpur Nagar'),
+        ('Kasganj', 'Kasganj'),
+        ('Kaushambi', 'Kaushambi'),
+        ('Kushinagar', 'Kushinagar'),
+        ('Lakhimpur Kheri', 'Lakhimpur Kheri'),
+        ('Lalitpur', 'Lalitpur'),
+        ('Lucknow', 'Lucknow'),
+        ('Maharajganj', 'Maharajganj'),
+        ('Mahoba', 'Mahoba'),
+        ('Mainpuri', 'Mainpuri'),
+        ('Mathura', 'Mathura'),
+        ('Mau', 'Mau'),
+        ('Meerut', 'Meerut'),
+        ('Mirzapur', 'Mirzapur'),
+        ('Moradabad', 'Moradabad'),
+        ('Muzaffarnagar', 'Muzaffarnagar'),
+        ('Pilibhit', 'Pilibhit'),
+        ('Pratapgarh', 'Pratapgarh'),
+        ('Rae Bareli', 'Rae Bareli'),
+        ('Rampur', 'Rampur'),
+        ('Saharanpur', 'Saharanpur'),
+        ('Sant Kabir Nagar', 'Sant Kabir Nagar'),
+        ('Sant Ravidas Nagar', 'Sant Ravidas Nagar'),
+        ('Shahjahanpur', 'Shahjahanpur'),
+        ('Shamli', 'Shamli'),
+        ('Shravasti', 'Shravasti'),
+        ('Siddharthnagar', 'Siddharthnagar'),
+        ('Sitapur', 'Sitapur'),
+        ('Sonbhadra', 'Sonbhadra'),
+        ('Sultanpur', 'Sultanpur'),
+        ('Unnao', 'Unnao'),
+        ('Varanasi', 'Varanasi'),
+    ]
+
+    empanel_district = models.CharField("Empanel District", max_length=255, choices =DISTRICT_CHOICES, blank=True, null=True)
+
+    CATEGORY_CHOICES = [
+        ('UR', 'General/Unreserved (UR)'),
+        ('SC', 'Scheduled Castes (SC)'),
+        ('ST', 'Scheduled Tribe (ST)'),
+        ('OBC', 'Other Backward Class (OBC)')
+    ]
+
+    social_category = models.CharField("Social Category", max_length=50, choices=CATEGORY_CHOICES, blank=True, null=True)
+    
+    GENDER_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Others', 'Others')
+    ]
+
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, null=True)
+
+    EDUCATION_CHOICES =[
+        ('Under Graduate (UG)', 'Under Graduate (UG)'),
+        ('Post Graduate (PG)', 'Post Graduate (PG)')
+    ]
+
+    education = models.CharField(max_length=200, choices=EDUCATION_CHOICES, blank=True, null=True)
+    
+    MARITAL_CHOICES = [
+        ('Married', 'Married'),
+        ('Unmarried', 'Unmarried'),
+        ('Divorced/Widowed', 'Divorced/Widowed')
+    ]
+
+    marital_status = models.CharField(max_length=50, choices=MARITAL_CHOICES, blank=True, null=True)    
     parent_or_spouse_name = models.CharField("Father/Mother/Spouse Name", max_length=200, blank=True, null=True)
 
     # Submission-level designation (optional, mirrors MasterTrainer designation)
