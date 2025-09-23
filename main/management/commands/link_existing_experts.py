@@ -10,17 +10,17 @@ User = get_user_model()
 # Use canonical usernames exactly as in your admin list.
 # Do NOT include lovelesh@SMMU as you asked.
 MAPPING = {
-    "Farm LH": "satyajeet.shukla@smmu",
-    "FNHW": "parul@smmu",
-    "M&E": "sudheer@smmu",
-    "MCLF": "ajay.kushwaha@smmu",
-    "MF&FI": "prachi@smmu",
-    "Non Farm": "acharya.shekher@smmu",
-    "NONFARM LH": "acharya.shekher@smmu",
-    "SISD": "ajay.pratap.singh@smmu",
-    "SMCB": "karunesh@smmu",
-    "TNCB": "sudheer@smmu",
-    "Fishery": "parul@smmu",
+    "Farm LH": "SMM_FARMLH",
+    "FNHW": "SMM_FNHW",
+    "M&E": "SMM_ME",
+    "MCLF": "SMM_MCLF",
+    "MF&FI": "SMM_MF",
+    "Non Farm": "SMM_NONFARM",
+    "NONFARM LH": "SMM_NONFARMLH",
+    "SISD": "SMM_SISD",
+    "SMCB": "SMM_SMCB",
+    "TNCB": "SMM_TNCB",
+    "Fishery": "SMM_FISHERY",
     # add more explicit mappings as needed
 }
 
