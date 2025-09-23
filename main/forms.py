@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from .models import User, MasterTrainer, MasterTrainerSubmission, MasterTrainerCertificate, TrainingPlan
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
+import re
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -29,6 +31,8 @@ class MasterTrainerSignupForm(forms.Form):
         mobile = self.cleaned_data['mobile'].strip()
         if User.objects.filter(mobile=mobile).exists():
             raise ValidationError("This mobile number is already registered.")
+        elif not re.match(r'^\d{10}$', mobile):
+            raise ValidationError("Mobile number must be exactly 10 digits.")
         return mobile
 
     def save(self):
@@ -72,6 +76,71 @@ class MasterTrainerSubmissionForm(forms.ModelForm):
         # set queryset lazily to avoid import issues at module load
         from .models import TrainingPlan
         self.fields['training_plans'].queryset = TrainingPlan.objects.all()
+    
+    # --- Custom field validations ---
+
+    def clean_full_name(self):
+        full_name = self.cleaned_data.get('full_name')
+        if not full_name:
+            return full_name  # let blank/null pass if allowed
+        full_name = full_name.strip()
+        if not re.match(r'^[A-Z ]+$', full_name):
+            raise ValidationError("Full Name must contain only capital letters (A-Z).")
+        return full_name
+
+    def clean_mobile_no(self):
+        mobile = self.cleaned_data.get('mobile_no')
+        if not mobile:
+            return mobile
+        mobile = mobile.strip()
+        if not re.match(r'^\d{10}$', mobile):
+            raise ValidationError("Mobile number must be exactly 10 digits.")
+        return mobile
+
+    def clean_aadhaar_no(self):
+        aadhaar = self.cleaned_data.get('aadhaar_no')
+        if not aadhaar:
+            return aadhaar
+        aadhaar = aadhaar.strip()
+        if not re.match(r'^\d{12}$', aadhaar):
+            raise ValidationError("Aadhaar number must be exactly 12 digits.")
+        return aadhaar
+
+    def clean_branch_name(self):
+        branch = self.cleaned_data.get('branch_name')
+        if not branch:
+            return branch
+        branch = branch.strip()
+        if not re.match(r'^[A-Z ]+$', branch):
+            raise ValidationError("Branch Name must contain only uppercase alphabets.")
+        return branch
+
+    def clean_bank_name(self):
+        bank = self.cleaned_data.get('bank_name')
+        if not bank:
+            return bank
+        bank = bank.strip()
+        if not re.match(r'^[A-Z ]+$', bank):
+            raise ValidationError("Bank Name must contain only uppercase alphabets.")
+        return bank
+
+    def clean_other_achievements(self):
+        achievements = self.cleaned_data.get('other_achievements')
+        if not achievements:
+            return achievements
+        word_count = len(achievements.split())
+        if word_count > 200:
+            raise ValidationError("Other achievements must not exceed 200 words.")
+        return achievements
+
+    def clean_success_stories(self):
+        stories = self.cleaned_data.get('success_stories')
+        if not stories:
+            return stories
+        word_count = len(stories.split())
+        if word_count > 200:
+            raise ValidationError("Success stories must not exceed 200 words.")
+        return stories
 
 class AdminUserCreateForm(forms.ModelForm):
     """

@@ -97,7 +97,7 @@
       <tr>
         <th>ID</th>
         <th>Name</th>
-        <th>Mobile</th>
+        <th>Designation</th>
         <th>District</th>
         <th>Category</th>
       </tr>
@@ -107,7 +107,7 @@
         <tr class="clickable" onclick="location.href='{% url 'expert_trainer_detail' t.pk %}';" role="row">
           <td data-label="ID">{{ t.id }}</td>
           <td data-label="Name">{{ t.full_name }}</td>
-          <td data-label="Mobile">{{ t.mobile_no }}</td>
+          <td data-label="Designation">{{ t.designation }}</td>
           <td data-label="District">{{ t.empanel_district }}</td>
           <td data-label="Category">{{ t.social_category|default:'-' }}</td>
         </tr>
