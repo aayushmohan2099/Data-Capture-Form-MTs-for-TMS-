@@ -1,0 +1,9 @@
+branch-defaults:
+  master:
+    environment: dcmaster-env
+environment-defaults: {}
+global:
+  application_name: dcmaster-app
+  default_region: ap-south-1
+  profile: default
+  workspace_type: Application
