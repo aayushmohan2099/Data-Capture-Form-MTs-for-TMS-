@@ -1,6 +1,6 @@
 # main/urls.py
 from django.urls import path
-from . import views
+from . import views, api
 
 urlpatterns = [
     path('', views.login_view, name='login'),
@@ -33,4 +33,8 @@ urlpatterns = [
     path("dashboard/admin/rejected-trainers/", views.admin_rejected_trainers, name="admin_rejected_trainers"),
     path("dashboard/admin/all-submissions/", views.admin_all_submissions, name="admin_all_submissions"),
     path("dashboard/admin/change-password/", views.admin_change_password, name="admin_change_password"),
+]
+
+urlpatterns += [
+    path('api/v1/approved-trainers/', api.approved_trainers_api, name='api_approved_trainers'),
 ]
