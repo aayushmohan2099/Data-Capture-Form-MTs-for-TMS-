@@ -15,7 +15,9 @@ import re , json
 from datetime import datetime
 from django.db import transaction
 from django.db.models import Count, Q
-
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET, require_POST
+import random
 User = get_user_model()
 
 
@@ -66,17 +68,98 @@ def login_view(request):
     return render(request, 'main/login.html', {'form': form})
 
 
-def master_signup(request):
-    # Only available to create master-trainer accounts
-    if request.method == 'POST':
-        form = MasterTrainerSignupForm(request.POST)
-        if form.is_valid():
-            user, mt = form.save()
-            messages.success(request, "Account created. Please log in.")
-            return redirect('login')
+@require_GET
+def signup_captcha(request):
+    """
+    AJAX endpoint: generate a new simple arithmetic captcha question,
+    store the numeric answer in session and return the question text as JSON.
+    """
+    a = random.randint(1, 9)
+    b = random.randint(1, 9)
+    op = random.choice(['+', '-','*'])
+    if op == '+':
+        ans = a + b
+        question = f"{a} + {b} = ?"
+    elif op == '-':
+        ans = a - b
+        question = f"{a} - {b} = ?"
     else:
+        ans = a * b
+        question = f"{a} × {b} = ?"
+
+    # store answer as string in session so comparison is straightforward
+    request.session['signup_captcha_answer'] = str(ans)
+    # optional: can set short expiry by storing timestamp and checking later
+    return JsonResponse({'question': question})
+
+
+def master_signup(request):
+    """
+    Keep your existing signup logic but include simple captcha server-side check.
+    On GET: generate a question and put it into context as captcha_question.
+    On POST: verify posted 'signup_captcha' matches session['signup_captcha_answer'] (pop it).
+    """
+    if request.method == 'GET':
+        # create initial captcha for the form
+        a = random.randint(1,9)
+        b = random.randint(1,9)
+        op = random.choice(['+','-','*'])
+        if op == '+':
+            question = f"{a} + {b} = ?"
+            ans = a + b
+        elif op == '-':
+            question = f"{a} - {b} = ?"
+            ans = a - b
+        else:
+            question = f"{a} × {b} = ?"
+            ans = a * b
+        request.session['signup_captcha_answer'] = str(ans)
+
         form = MasterTrainerSignupForm()
-    return render(request, 'main/signup.html', {'form': form})
+        return render(request, 'main/signup.html', {
+            'form': form,
+            'captcha_question': question,
+        })
+
+    # POST handling
+    form = MasterTrainerSignupForm(request.POST)
+    # validate captcha from session
+    posted = request.POST.get('signup_captcha', '').strip()
+    expected = request.session.pop('signup_captcha_answer', None)  # remove after read
+    if expected is None:
+        messages.error(request, "Captcha expired or missing. Please reload the page and try again.")
+        # Recreate a new captcha so the template has one to show (GET behaviour)
+        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','-','*'])
+        if op == '+': question = f"{a} + {b} = ?"; ans = a + b
+        elif op == '-': question = f"{a} - {b} = ?"; ans = a - b
+        else: question = f"{a} × {b} = ?"; ans = a * b
+        request.session['signup_captcha_answer'] = str(ans)
+        return render(request, 'main/signup.html', {'form': form, 'captcha_question': question})
+
+    # posted must be numeric and match expected string
+    if not posted or posted != expected:
+        messages.error(request, "Captcha incorrect. Please try again.")
+        # generate a fresh captcha for re-display
+        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','-','*'])
+        if op == '+': question = f"{a} + {b} = ?"; ans = a + b
+        elif op == '-': question = f"{a} - {b} = ?"; ans = a - b
+        else: question = f"{a} × {b} = ?"; ans = a * b
+        request.session['signup_captcha_answer'] = str(ans)
+        return render(request, 'main/signup.html', {'form': form, 'captcha_question': question})
+
+    # captcha OK -> continue with your existing signup flow:
+    if form.is_valid():
+        user, mt = form.save()
+        messages.success(request, "Account created. Please log in.")
+        return redirect('login')
+    else:
+        # form invalid: re-render and regenerate captcha
+        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','-','*'])
+        if op == '+': question = f"{a} + {b} = ?"; ans = a + b
+        elif op == '-': question = f"{a} - {b} = ?"; ans = a - b
+        else: question = f"{a} × {b} = ?"; ans = a * b
+        request.session['signup_captcha_answer'] = str(ans)
+        return render(request, 'main/signup.html', {'form': form, 'captcha_question': question})
 
 
 @login_required
@@ -179,6 +262,8 @@ def capture_submission(request):
             themes.append(key)   # keep a display-friendly theme in themes list (non-normalized)
         modules_by_theme[norm_key].append({'id': p.id, 'name': p.training_name})
 
+    # constants
+    MAX_FILE_BYTES = 10 * 1024 * 1024  # 10 MB
 
     if request.method == 'POST':
         # pass FILES in case form includes any FileFields (safe even if not)
@@ -188,7 +273,7 @@ def capture_submission(request):
         print("DEBUG: POST keys:", list(request.POST.keys()))
         print("DEBUG: FILES keys:", list(request.FILES.keys()))
 
-        # collect certificate indices from POST keys (same as before)
+        # collect certificate indices from POST keys
         idx_set = set()
         for key in request.POST.keys():
             m = re.match(r'^certs-(\d+)-theme$', key)
@@ -196,8 +281,9 @@ def capture_submission(request):
                 idx_set.add(int(m.group(1)))
         indices = sorted(idx_set)
 
-        # collect files: file input names are certs-<i>-file
+        # collect cert rows and prepare submitted_cert_rows for re-population if validation fails
         cert_rows = []
+        submitted_cert_rows = []  # will be passed back to template (no file data)
         for i in indices:
             theme_val = request.POST.get(f'certs-{i}-theme', '').strip()
             module_val = request.POST.get(f'certs-{i}-module', '').strip()
@@ -217,62 +303,123 @@ def capture_submission(request):
                         issued_on = None
 
             cert_rows.append({
+                'index': i,
                 'theme': theme_val or None,
                 'module_id': int(module_val) if module_val else None,
                 'file': file_obj,
                 'certificate_number': cert_number,
                 'issuing_authority': issuing,
                 'issued_on': issued_on,
+                'issued_on_raw': issued_on_raw or '',
             })
 
+            submitted_cert_rows.append({
+                'theme': theme_val or '',
+                'module_id': int(module_val) if module_val else None,
+                'certificate_number': cert_number or '',
+                'issuing_authority': issuing or '',
+                'issued_on': issued_on_raw or '',
+            })
 
-        if form.is_valid():
-            submission = form.save(commit=False)
-            submission.trainer = mt
-            submission.status = 'pending'
-            submission.submitted_at = timezone.now()
-            submission.save()
-            form.save_m2m()
-
-            # Save certificates (same as before)
-            cert_count = 0
-            for r in cert_rows:
-                f = r['file']
-                if not f:
-                    continue
-                module_obj = None
-                if r['module_id']:
-                    module_obj = TrainingPlan.objects.filter(pk=r['module_id']).first()
-                MasterTrainerCertificate.objects.create(
-                    trainer_submission=submission,
-                    trainer=None,
-                    training_module=module_obj,
-                    certificate_file=f,
-                    certificate_number=r.get('certificate_number'),
-                    issuing_authority=r.get('issuing_authority'),
-                    issued_on=r.get('issued_on'),
-                    status='pending'
-                )
-                cert_count += 1
-
-            messages.success(request, f"Submission saved. {cert_count} certificate(s) uploaded and sent for review.")
-            return redirect('master_home')
-
+        # server-side validation for certificates
+        cert_errors = []
+        if not cert_rows:
+            cert_errors.append("At least one certificate row is required.")
         else:
-            # DEBUG: log errors to console and show them to user
+            for idx, r in enumerate(cert_rows, start=1):
+                label = f"Certificate row #{idx}"
+                if not r.get('theme'):
+                    cert_errors.append(f"{label}: Theme is required.")
+                if not r.get('module_id'):
+                    cert_errors.append(f"{label}: Module is required.")
+                if not r.get('certificate_number'):
+                    cert_errors.append(f"{label}: Certificate number is required.")
+                if not r.get('issuing_authority'):
+                    cert_errors.append(f"{label}: Issuing authority is required.")
+                if not r.get('issued_on'):
+                    cert_errors.append(f"{label}: Issued on date is required.")
+                f = r.get('file')
+                if not f:
+                    cert_errors.append(f"{label}: Certificate file is required.")
+                else:
+                    # size check (guard if attribute missing)
+                    try:
+                        if hasattr(f, 'size') and f.size > MAX_FILE_BYTES:
+                            cert_errors.append(f"{label}: File too large ({(f.size/1024/1024):.2f} MB). Maximum allowed is 10 MB.")
+                    except Exception as ex:
+                        print("Warning checking file size:", ex)
+                    # type/extension check: allow pdf or images
+                    name = getattr(f, 'name', '').lower()
+                    content_type = getattr(f, 'content_type', '') or ''
+                    if not (name.endswith('.pdf') or content_type.startswith('image/')):
+                        cert_errors.append(f"{label}: Only PDF or image files are allowed.")
+
+        # Validate form fields via Django form
+        form_is_valid = form.is_valid()
+
+        # If either form-level errors or certificate errors, show and re-render with submitted rows
+        if not form_is_valid or cert_errors:
+            # DEBUG: log errors to console
             print("DEBUG: form.errors (python repr):", form.errors)
             try:
                 print("DEBUG: form.errors.as_json():", form.errors.as_json())
             except Exception:
                 pass
-            # also add friendly messages for the user to see
-            # include non-field errors and each field's errors
+
+            # attach user-friendly messages
             nf = form.non_field_errors()
             if nf:
                 messages.error(request, "Form non-field errors: " + "; ".join(nf))
             for fname, ferr in form.errors.items():
                 messages.error(request, f"{fname}: " + "; ".join(ferr))
+
+            # attach certificate errors as form non-field errors (so template shows them)
+            for ce in cert_errors:
+                form.add_error(None, ce)
+                messages.error(request, ce)
+
             messages.error(request, "Please fix the errors shown in the form below.")
+
+            context = {
+                'form': form,
+                'trainer': mt,
+                'themes': themes,
+                'modules_by_theme_json': json.dumps(modules_by_theme),
+                'submitted_cert_rows_json': json.dumps(submitted_cert_rows),
+            }
+            return render(request, 'main/capture.html', context)
+
+        # all validation passed -> save submission + certs
+        submission = form.save(commit=False)
+        submission.trainer = mt
+        submission.status = 'pending'
+        submission.submitted_at = timezone.now()
+        submission.save()
+        form.save_m2m()
+
+        cert_count = 0
+        for r in cert_rows:
+            f = r['file']
+            if not f:
+                continue
+            module_obj = None
+            if r['module_id']:
+                module_obj = TrainingPlan.objects.filter(pk=r['module_id']).first()
+            MasterTrainerCertificate.objects.create(
+                trainer_submission=submission,
+                trainer=None,
+                training_module=module_obj,
+                certificate_file=f,
+                certificate_number=r.get('certificate_number'),
+                issuing_authority=r.get('issuing_authority'),
+                issued_on=r.get('issued_on'),
+                status='pending'
+            )
+            cert_count += 1
+
+        messages.success(request, f"Submission saved. {cert_count} certificate(s) uploaded and sent for review.")
+        return redirect('master_home')
+
     else:
         # GET - prefill fields from existing mt if present
         initial = {
@@ -299,8 +446,10 @@ def capture_submission(request):
         'trainer': mt,
         'themes': themes,
         'modules_by_theme_json': json.dumps(modules_by_theme),
+        'submitted_cert_rows_json': json.dumps([]),  # empty by default on GET
     }
     return render(request, 'main/capture.html', context)
+
 
 @login_required
 def master_home_list(request):
@@ -520,27 +669,29 @@ def expert_required(view_func):
 @expert_required
 def expert_approved_trainers(request):
     """
-    Trainers whose submission/profile this TE verified (profile_verified_by == request.user and profile_verified=True).
-    Shows list of MasterTrainer records produced by this TE's verification.
+    Trainers for which this TE has approved at least one certificate.
+    Any TE who approved a certificate for a trainer will see that trainer here.
     """
-    # submissions verified by this TE
-    subs = MasterTrainerSubmission.objects.filter(profile_verified=True, profile_verified_by=request.user).select_related('trainer')
-    # derive trainer objects
+    # find certificates approved by this TE that are linked to a trainer (or to a submission which links to a trainer)
+    certs = MasterTrainerCertificate.objects.filter(status='approved', reviewed_by=request.user).select_related('trainer', 'trainer_submission')
+
+    trainer_ids = set()
     trainers = []
-    for s in subs:
-        if s.trainer:
-            trainers.append(s.trainer)
-    # avoid duplicates
-    seen = set()
-    unique_trainers = []
-    for t in trainers:
-        if t.id not in seen:
-            unique_trainers.append(t)
-            seen.add(t.id)
+    for c in certs:
+        # prefer direct trainer link
+        if c.trainer:
+            t = c.trainer
+        else:
+            # fallback to trainer via submission
+            t = getattr(getattr(c, 'trainer_submission', None), 'trainer', None)
+        if t and t.id not in trainer_ids:
+            trainer_ids.add(t.id)
+            trainers.append(t)
 
     return render(request, 'main/expert_approved_trainers.html', {
-        'trainers': unique_trainers,
+        'trainers': trainers,
     })
+
 
 
 @expert_required

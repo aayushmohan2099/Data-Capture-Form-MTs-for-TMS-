@@ -1,49 +1,271 @@
 {% extends "main/base.html" %}
 {% block title %}Trainer detail{% endblock %}
+
 {% block content %}
-  <h2>Trainer: {{ trainer.full_name }}</h2>
-  <p>Mobile: {{ trainer.mobile_no }} &nbsp; - &nbsp; District: {{ trainer.empanel_district|default:"-" }}</p>
+<style>
+/* Page wrapper */
+.detail-wrap {
+  max-width: 1100px;
+  margin: 18px auto 40px;
+  padding: 18px;
+}
 
-  <h3>Profile fields</h3>
-  <table style="width:100%; border-collapse:collapse;">
-    <tbody>
-      <tr><th style="text-align:left; padding:6px;">Full name</th><td style="padding:6px;">{{ trainer.full_name }}</td></tr>
-      <tr><th style="text-align:left; padding:6px;">Mobile</th><td style="padding:6px;">{{ trainer.mobile_no }}</td></tr>
-      <tr><th style="text-align:left; padding:6px;">Aadhaar</th><td style="padding:6px;">{{ trainer.aadhaar_no|default:"-" }}</td></tr>
-      <tr><th style="text-align:left; padding:6px;">Education</th><td style="padding:6px;">{{ trainer.education|default:"-" }}</td></tr>
-      <tr><th style="text-align:left; padding:6px;">Bank</th><td style="padding:6px;">{{ trainer.bank_name|default:"-" }} / {{ trainer.bank_account_number|default:"-" }}</td></tr>
-    </tbody>
-  </table>
+/* Header */
+.detail-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:12px;
+  margin-bottom:14px;
+}
+.detail-title {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-size: 28px;
+  color: #214b6f;
+  letter-spacing: 0.6px;
+  margin: 0;
+}
+.detail-sub {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
 
-  <h3 style="margin-top:14px;">Recent submissions</h3>
-  <table style="width:100%; border-collapse:collapse;">
-    <thead>
-      <tr style="background:#f6f9fc;color:#083355;"><th style="padding:6px;">Submission</th><th style="padding:6px;">Status</th><th style="padding:6px;">Submitted at</th></tr>
-    </thead>
-    <tbody>
-      {% for s in submissions %}
-        <tr>
-          <td style="padding:6px;">{{ s.pk }}</td>
-          <td style="padding:6px;">{{ s.get_status_display }}</td>
-          <td style="padding:6px;">{{ s.submitted_at }}</td>
-        </tr>
-      {% empty %}
-        <tr><td colspan="3" style="padding:6px;">No submissions</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+/* Panel */
+.card {
+  background: linear-gradient(#2d6aa0, #214b6f);
+  padding: 18px;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  color: white;
+}
+.card-inner {
+  background: linear-gradient(#f4f9ff, #eaf6ff);
+  color: #111;
+  padding: 18px;
+  border-radius: 6px;
+}
 
-  <h3 style="margin-top:18px;">Certificates</h3>
-  <ul>
-    {% for c in certificates %}
-      <li style="margin-bottom:6px;">
-        {% if c.certificate_file %}<a href="{{ c.certificate_file.url }}" target="_blank">File</a>{% else %}No file{% endif %}
-         — Module: {% if c.training_module %}{{ c.training_module.training_name }}{% else %}Unassigned{% endif %}
-         — Status: {{ c.get_status_display }}
-      </li>
-    {% empty %}
-      <li>No certificates uploaded yet.</li>
-    {% endfor %}
-  </ul>
+/* Two-column layout */
+.row {
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+}
+.col-2-3 { flex: 2 1 640px; min-width: 260px; }
+.col-1-3 { flex: 1 1 320px; min-width: 220px; }
 
+/* Profile table */
+.profile-table { width:100%; border-collapse:collapse; }
+.profile-table th {
+  text-align:left;
+  padding:10px;
+  background: rgba(0,0,0,0.04);
+  width: 36%;
+  vertical-align: top;
+  font-weight:700;
+}
+.profile-table td { padding:10px; border-top: 1px solid rgba(0,0,0,0.04); }
+
+/* Submissions list */
+.submissions-list { margin-top:12px; display:flex; flex-direction:column; gap:10px; }
+.submission-card {
+  border-radius:6px;
+  padding:12px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  border:1px solid #eef6ff;
+}
+.submission-top { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+.submission-meta { color:#556; font-size:13px; }
+.cert-list { margin-top:10px; list-style:none; padding-left:0; margin-bottom:0; }
+.cert-list li {
+  padding:8px 6px;
+  border-top:1px dashed #eef6ff;
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+  font-size:14px;
+}
+.cert-list li:first-child { border-top: none; }
+
+/* file link style */
+.file-link {
+  background: linear-gradient(#fff,#f3fbff);
+  padding:6px 10px;
+  border-radius:4px;
+  border:1px solid #dbeffb;
+  text-decoration:none;
+  color:#0b3550;
+  font-weight:600;
+}
+
+/* status badge */
+.status {
+  font-size:12px;
+  padding:6px 8px;
+  border-radius:999px;
+  color:white;
+  font-weight:700;
+}
+.status-pending { background:#f59e0b; }
+.status-approved { background:#16a34a; }
+.status-rejected { background:#dc2626; }
+.status-reverted { background:#ef4444; }
+
+/* side tips */
+.tips {
+  background: #0b3550;
+  color: #fff;
+  padding: 14px;
+  border-radius: 6px;
+  box-shadow: inset 0 -12px 0 rgba(0,0,0,0.06);
+}
+.tips h3 { margin-top:0; margin-bottom:8px; font-size:16px; }
+.tips p { margin:0; font-size:13px; color:#e6f3ff; }
+
+/* footer actions */
+.actions { margin-top:14px; display:flex; gap:8px; flex-wrap:wrap; }
+.btn { background:#fff; color:#0b3550; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; text-decoration:none; display:inline-block; font-weight:700; }
+.btn.secondary { background:transparent; border:1px solid rgba(11,53,80,0.08); color:#0b3550; }
+
+/* responsive */
+@media (max-width:800px) {
+  .row { flex-direction:column; }
+  .detail-header { flex-direction:column; align-items:flex-start; gap:6px; }
+}
+</style>
+
+<div class="detail-wrap">
+  <div class="detail-header">
+    <div>
+      <h1 class="detail-title">Trainer: {{ trainer.full_name }}</h1>
+      <div class="detail-sub">Mobile: <strong>{{ trainer.mobile_no }}</strong> — District: <strong>{{ trainer.empanel_district|default:"-" }}</strong></div>
+    </div>
+    <div>
+      <div class="actions">
+        <a class="btn" href="{% url 'expert_approved_trainers' %}">Back to approved trainers</a>
+        <a class="btn secondary" href="{% url 'expert_trainer_detail' trainer.pk %}">Refresh</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-inner">
+      <div class="row">
+        <!-- Left: profile & certificates -->
+        <div class="col-2-3">
+          <h3 style="margin-top:0;margin-bottom:8px;color:#214b6f;">Profile</h3>
+          <table class="profile-table" aria-describedby="profile-desc">
+            <tbody>
+              <tr><th>Full name</th><td>{{ trainer.full_name }}</td></tr>
+              <tr><th>Mobile</th><td>{{ trainer.mobile_no }}</td></tr>
+              <tr><th>Aadhaar</th><td>{{ trainer.aadhaar_no|default:"-" }}</td></tr>
+              <tr><th>Education</th><td>{{ trainer.education|default:"-" }}</td></tr>
+              <tr><th>Designation</th><td>{{ trainer.designation|default:"-" }}</td></tr>
+              <tr><th>Empanel District</th><td>{{ trainer.empanel_district|default:"-" }}</td></tr>
+              <tr><th>Bank</th>
+                <td>
+                  {% if trainer.bank_name or trainer.bank_account_number %}
+                    {{ trainer.bank_name|default:"-" }} / {{ trainer.bank_account_number|default:"-" }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 style="margin-top:18px;color:#214b6f;">Certificates</h3>
+
+          {% if certificates %}
+            <div class="submissions-list" role="list">
+              <div class="submission-card" aria-hidden="false">
+                <div class="submission-top">
+                  <div class="submission-meta">Total certificates: <strong>{{ certificates|length }}</strong></div>
+                  <div class="submission-meta">Latest: <strong>{{ certificates.0.created_at|date:"d M Y H:i" }}</strong></div>
+                </div>
+
+                <ul class="cert-list" role="list">
+                  {% for c in certificates %}
+                    <li role="listitem">
+                      <div style="flex:1;">
+                        <div><strong>{% if c.training_module %}{{ c.training_module.training_name }}{% else %}Unassigned{% endif %}</strong></div>
+                        <div style="color:#556;font-size:13px;margin-top:4px;">
+                          Certificate No: {{ c.certificate_number|default:"-" }} &nbsp; • &nbsp;
+                          Issued: {{ c.issued_on|date:"d M Y"|default:"-" }} &nbsp; • &nbsp;
+                          By: {{ c.issuing_authority|default:"-" }}
+                        </div>
+                      </div>
+
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        {% if c.certificate_file %}
+                          <a class="file-link" href="{{ c.certificate_file.url }}" target="_blank" rel="noopener">View file</a>
+                        {% else %}
+                          <span style="color:#999;font-size:13px;">No file</span>
+                        {% endif %}
+
+                        <div>
+                          {% if c.status == 'pending' %}
+                            <span class="status status-pending">PENDING</span>
+                          {% elif c.status == 'approved' %}
+                            <span class="status status-approved">APPROVED</span>
+                          {% elif c.status == 'rejected' %}
+                            <span class="status status-rejected">REJECTED</span>
+                          {% elif c.status == 'reverted' %}
+                            <span class="status status-reverted">REVERTED</span>
+                          {% else %}
+                            <span class="status" style="background:#6b7280;">{{ c.get_status_display }}</span>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% else %}
+            <p style="color:#555; margin-top:8px;">No certificates uploaded yet.</p>
+          {% endif %}
+
+          <!-- Submissions history (if available) -->
+          {% if submissions %}
+            <h3 style="margin-top:18px;color:#214b6f;">Submissions</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              {% for s in submissions %}
+                <div class="submission-card">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                      <div style="font-weight:700;">Submission #{{ s.pk }}</div>
+                      <div class="submission-meta">Submitted: {{ s.submitted_at|date:"d M Y H:i" }} — Status: {{ s.get_status_display }}</div>
+                    </div>
+                    <div>
+                      <a class="btn" href="{% url 'expert_submission_detail' s.pk %}">Open</a>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Right: tips / quick info -->
+        <div class="col-1-3">
+          <div class="tips" role="complementary">
+            <h3>Quick info</h3>
+            <p><strong>Trainer ID:</strong> {{ trainer.pk }}</p>
+            <p><strong>Created:</strong> {{ trainer.created_at|date:"d M Y" }}</p>
+            <p style="margin-top:8px;font-size:13px;">Use the buttons to view submission details or open certificate files in a new tab.</p>
+          </div>
+
+          <div style="margin-top:12px;">
+            <a class="btn" href="{% url 'expert_approved_trainers' %}" style="display:block;text-align:center;">Back to list</a>
+            <a class="btn secondary" href="{% url 'expert_home' %}" style="display:block;text-align:center;margin-top:8px;">Pending certificates</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

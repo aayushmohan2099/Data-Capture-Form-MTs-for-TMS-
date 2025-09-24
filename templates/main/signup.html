@@ -3,168 +3,128 @@
 
 {% block content %}
 <style>
-    /* --- Centering the Form --- */
-    .content-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 50vh;
-        padding: 30px 12px;
-    }
-
-    /* --- Panel Styling --- */
-    .panel {
-        background: linear-gradient(#2d6aa0, #214b6f);
-        padding: 26px;
-        border-radius: 8px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        color: white;
-        width: 100%;
-        max-width: 540px;
-    }
-
-    .panel-inner {
-        background: linear-gradient(#eaf1fb, #d6e7fb);
-        color: #111;
-        padding: 22px;
-        border-radius: 8px;
-    }
-
-    /* --- Title Styling --- */
-    .title {
-        font-family: 'Trebuchet MS', Arial, sans-serif;
-        font-size: 28px;
-        letter-spacing: 1.5px;
-        color: #2b6fb2;
-        text-shadow: 0 4px 0 rgba(255,255,255,0.12);
-        margin-bottom: 14px;
-        text-align: center;
-    }
-
-    /* --- Form Table Layout --- */
-    .form-table { 
-        width: 100%; 
-        border-collapse: collapse; 
-        margin-top: 6px;
-    }
-
-    .form-table .label-cell {
-        font-weight: 700; 
-        width: 38%; 
-        padding: 12px;
-        background: rgba(0, 0, 0, 0.04);
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-        text-align: right; /* Right-align labels */
-        vertical-align: middle;
-    }
-
-    .form-table .input-cell {
-        padding: 12px;
-        border-top: 1px solid rgba(0, 0, 0, 0.03);
-    }
-
-    .form-table input[type="text"],
-    .form-table input[type="password"],
-    .form-table input[type="tel"],
-    .form-table input {
-        width: 96%;
-        padding: 8px;
-        border: 1px solid #c9d6e8;
-        border-radius: 4px;
-        font-size: 14px;
-        box-sizing: border-box;
-    }
-
-    /* --- Button Styling --- */
-    .primary-btn {
-        appearance: none;
-        background: linear-gradient(#4aa1e8, #2a6fb0);
-        color: #fff;
-        border: none;
-        padding: 12px 18px;
-        font-weight: 700;
-        cursor: pointer;
-        border-radius: 6px;
-        box-shadow: 0 6px 0 rgba(20,70,110,0.45), 0 0 18px rgba(45,185,255,0.12);
-        width: 100%;
-        margin-top: 18px;
-        font-size: 16px;
-    }
-
-    .secondary-link {
-        display:block;
-        text-align:center;
-        margin-top:12px;
-        color:#083355;
-        text-decoration:underline;
-    }
-
-    /* --- Success/Error Messages --- */
-    .messages {
-        list-style-type: none;
-        padding: 0;
-        margin: 0 0 14px 0;
-    }
-
-    .messages li {
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 4px;
-        text-align: center;
-        font-weight:600;
-    }
-
-    .messages .error {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .messages .success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    /* small responsive tweak */
-    @media (max-width:520px) {
-      .form-table .label-cell { display:block; text-align:left; width:100%; padding:8px 6px; }
-      .form-table .input-cell { display:block; padding:8px 6px; }
-      .form-table input { width:100%; }
-    }
+  /* minimal styling (kept similar to yours) */
+  .content-container{display:flex;justify-content:center;align-items:center;min-height:50vh;padding:30px 12px;}
+  .panel{background:linear-gradient(#2d6aa0,#214b6f);padding:26px;border-radius:8px;color:white;width:100%;max-width:540px;}
+  .panel-inner{background:linear-gradient(#eaf1fb,#d6e7fb);color:#111;padding:22px;border-radius:8px;}
+  .title{font-size:28px;color:#2b6fb2;margin-bottom:14px;text-align:center;}
+  .form-table{width:100%;border-collapse:collapse;margin-top:6px;}
+  .label-cell{font-weight:700;width:38%;padding:12px;text-align:right;vertical-align:middle;}
+  .input-cell{padding:12px;}
+  input[type="text"], input[type="password"], input[type="tel"]{width:96%;padding:8px;border:1px solid #c9d6e8;border-radius:4px;}
+  .primary-btn{background:linear-gradient(#4aa1e8,#2a6fb0);color:#fff;border:none;padding:12px;border-radius:6px;width:100%;margin-top:18px;}
+  .field-error{color:#b00020;font-size:13px;margin-top:6px;display:block;}
+  .captcha-row { display:flex; align-items:center; gap:10px; }
+  .captcha-question { font-weight:700; background:#fff; padding:6px 10px; border-radius:4px;}
+  .refresh-btn { background:#eee; border:1px solid #ccc; padding:6px 10px; border-radius:4px; cursor:pointer; }
+  @media (max-width:520px){ .label-cell{display:block;text-align:left;width:100%;} .input-cell{display:block;} input{width:100%;} }
 </style>
 
 <div class="content-container">
-    <div class="panel" role="region" aria-labelledby="signup-heading">
-        <div class="panel-inner">
-            <h2 id="signup-heading" class="title">Master Trainer Signup</h2>
+  <div class="panel" role="region" aria-labelledby="signup-heading">
+    <div class="panel-inner">
+      <h2 id="signup-heading" class="title">Master Trainer Signup</h2>
 
-            {% if messages %}
-                <ul class="messages" aria-live="polite">
-                    {% for message in messages %}
-                        <li class="{{ message.tags }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+      {% if messages %}
+        <ul class="messages" aria-live="polite">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
 
-            <form method="post" novalidate>
-                {% csrf_token %}
+      <form id="signupForm" method="post" novalidate>
+        {% csrf_token %}
+        <table class="form-table" role="presentation">
+          <tr>
+            <td class="label-cell"><label for="{{ form.mobile.id_for_label }}">Mobile</label></td>
+            <td class="input-cell">
+              {{ form.mobile }}
+              <div id="mobile_feedback" class="field-error" style="display:none"></div>
+            </td>
+          </tr>
 
-                <table class="form-table" role="presentation">
-                    <tr>
-                        <td class="label-cell"><label for="{{ form.mobile.id_for_label }}">Mobile</label></td>
-                        <td class="input-cell">{{ form.mobile }}</td>
-                    </tr>
+          <tr>
+            <td class="label-cell"><label for="{{ form.password.id_for_label }}">Password</label></td>
+            <td class="input-cell">{{ form.password }}</td>
+          </tr>
 
-                    <tr>
-                        <td class="label-cell"><label for="{{ form.password.id_for_label }}">Password</label></td>
-                        <td class="input-cell">{{ form.password }}</td>
-                    </tr>
-                </table>
+          <!-- Simple captcha display -->
+          <tr>
+            <td class="label-cell">Captcha</td>
+            <td class="input-cell">
+              <div class="captcha-row">
+                <div class="captcha-question" id="captchaQuestion">{{ captcha_question }}</div>
+                <button type="button" id="refreshCaptcha" class="refresh-btn" aria-label="Refresh captcha">Refresh</button>
+              </div>
+              <div style="margin-top:8px;">
+                <input id="captchaInput" name="signup_captcha" type="text" placeholder="Enter captcha answer" autocomplete="off" style="padding:8px;border:1px solid #c9d6e8;border-radius:4px;width:46%;">
+                <span id="captchaErr" class="field-error" style="display:none"></span>
+              </div>
+            </td>
+          </tr>
+        </table>
 
-                <button class="primary-btn" type="submit">Create account</button>
-            </form>
+        <button class="primary-btn" type="submit">Create account</button>
+      </form>
 
-            <a href="{% url 'login' %}" class="secondary-link">Back to login</a>
-        </div>
+      <a href="{% url 'login' %}" style="display:block;text-align:center;margin-top:12px;color:#083355;text-decoration:underline;">Back to login</a>
     </div>
+  </div>
 </div>
+
+<script>
+/*
+  Minimal client-side script:
+  - refresh button requests new captcha from /signup/captcha/
+  - basic client-side validation on submit (non-empty numeric)
+  - server still performs final check using session
+*/
+(function(){
+  const refreshBtn = document.getElementById('refreshCaptcha');
+  const qEl = document.getElementById('captchaQuestion');
+  const input = document.getElementById('captchaInput');
+  const err = document.getElementById('captchaErr');
+  const form = document.getElementById('signupForm');
+
+  refreshBtn.addEventListener('click', function(){
+    fetch("{% url 'signup_captcha' %}", { method:'GET', credentials:'same-origin', headers:{'Accept':'application/json'} })
+      .then(r => r.json())
+      .then(j => {
+        if (j && j.question) {
+          qEl.textContent = j.question;
+          // clear input & error
+          input.value = '';
+          err.style.display = 'none';
+        } else {
+          console.warn('invalid captcha response', j);
+        }
+      })
+      .catch(err => {
+        console.error('captcha refresh failed', err);
+      });
+  });
+
+  form.addEventListener('submit', function(e){
+    err.style.display='none';
+    const val = (input.value||'').trim();
+    if (!val) {
+      e.preventDefault();
+      err.style.display='block';
+      err.textContent = 'Please enter captcha answer.';
+      input.focus();
+      return false;
+    }
+    // ensure numeric (server will validate exact)
+    if (!/^-?\d+$/.test(val)) {
+      e.preventDefault();
+      err.style.display='block';
+      err.textContent = 'Captcha answer must be a number.';
+      input.focus();
+      return false;
+    }
+    return true; // allow submit; server will check session-stored answer
+  });
+})();
+</script>
 {% endblock %}

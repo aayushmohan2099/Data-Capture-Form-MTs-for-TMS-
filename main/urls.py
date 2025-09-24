@@ -38,3 +38,8 @@ urlpatterns = [
 urlpatterns += [
     path('api/v1/approved-trainers/', api.approved_trainers_api, name='api_approved_trainers'),
 ]
+
+urlpatterns += [
+    path('signup/captcha/', views.signup_captcha, name='signup_captcha'),
+    path('signup/', views.master_signup, name='master_signup'), 
+]

@@ -187,6 +187,24 @@
 /* Flash/errors */
 .flash-messages .flash { padding: 8px 10px; margin-bottom: 8px; border-radius: 2px; }
 .form-errors { background: #ffecec; color: #7a0000; padding: 8px 10px; border-radius: 2px; margin-bottom:12px; }
+
+/* inline field error styling */
+.field-error {
+  color: #b00020;
+  font-size: 13px;
+  margin-top: 6px;
+  display: block;
+}
+
+/* small wordcount UI */
+.wordcount {
+  font-size: 12px;
+  color: #444;
+  margin-top: 4px;
+}
+.wordcount.warning {
+  color: #b00020;
+}
 </style>
 
 <div class="capture-wrap">
@@ -233,17 +251,62 @@
             <div id="tab-basic" class="tab" style="display:block;">
               <table class="form-table">
                 <tbody>
-                  <tr><td class="label-cell">{{ form.full_name.label_tag }}</td><td class="input-cell">{{ form.full_name }}</td></tr>
-                  <tr><td class="label-cell">{{ form.date_of_birth.label_tag }}</td><td class="input-cell">{{ form.date_of_birth }}</td></tr>
-                  <tr><td class="label-cell">{{ form.mobile_no.label_tag }}</td><td class="input-cell">{{ form.mobile_no }}</td></tr>
-                  <tr><td class="label-cell">{{ form.designation.label_tag }}</td><td class="input-cell">{{ form.designation }}</td></tr>
-                  <tr><td class="label-cell">{{ form.aadhaar_no.label_tag }}</td><td class="input-cell">{{ form.aadhaar_no }}</td></tr>
-                  <tr><td class="label-cell">{{ form.empanel_district.label_tag }}</td><td class="input-cell">{{ form.empanel_district }}</td></tr>
-                  <tr><td class="label-cell">{{ form.social_category.label_tag }}</td><td class="input-cell">{{ form.social_category }}</td></tr>
-                  <tr><td class="label-cell">{{ form.gender.label_tag }}</td><td class="input-cell">{{ form.gender }}</td></tr>
-                  <tr><td class="label-cell">{{ form.education.label_tag }}</td><td class="input-cell">{{ form.education }}</td></tr>
-                  <tr><td class="label-cell">{{ form.marital_status.label_tag }}</td><td class="input-cell">{{ form.marital_status }}</td></tr>
-                  <tr><td class="label-cell">{{ form.parent_or_spouse_name.label_tag }}</td><td class="input-cell">{{ form.parent_or_spouse_name }}</td></tr>
+                  <tr>
+                    <td class="label-cell">{{ form.full_name.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.full_name }}
+                      <span class="field-error" id="err_full_name" style="display:none"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.date_of_birth.label_tag }}</td>
+                    <td class="input-cell">{{ form.date_of_birth }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.mobile_no.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.mobile_no }}
+                      <span class="field-error" id="err_mobile_no" style="display:none"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.designation.label_tag }}</td>
+                    <td class="input-cell">{{ form.designation }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.aadhaar_no.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.aadhaar_no }}
+                      <span class="field-error" id="err_aadhaar_no" style="display:none"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.empanel_district.label_tag }}</td>
+                    <td class="input-cell">{{ form.empanel_district }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.social_category.label_tag }}</td>
+                    <td class="input-cell">{{ form.social_category }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.gender.label_tag }}</td>
+                    <td class="input-cell">{{ form.gender }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.education.label_tag }}</td>
+                    <td class="input-cell">{{ form.education }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.marital_status.label_tag }}</td>
+                    <td class="input-cell">{{ form.marital_status }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.parent_or_spouse_name.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.parent_or_spouse_name }}
+                      <span class="field-error" id="err_parent_or_spouse_name" style="display:none"></span>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -251,10 +314,34 @@
             <div id="tab-banking" class="tab" style="display:none;">
               <table class="form-table">
                 <tbody>
-                  <tr><td class="label-cell">{{ form.bank_account_number.label_tag }}</td><td class="input-cell">{{ form.bank_account_number }}</td></tr>
-                  <tr><td class="label-cell">{{ form.ifsc.label_tag }}</td><td class="input-cell">{{ form.ifsc }}</td></tr>
-                  <tr><td class="label-cell">{{ form.branch_name.label_tag }}</td><td class="input-cell">{{ form.branch_name }}</td></tr>
-                  <tr><td class="label-cell">{{ form.bank_name.label_tag }}</td><td class="input-cell">{{ form.bank_name }}</td></tr>
+                  <tr>
+                    <td class="label-cell">{{ form.bank_account_number.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.bank_account_number }}
+                      <span class="field-error" id="err_bank_account_number" style="display:none"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.ifsc.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.ifsc }}
+                      <span class="field-error" id="err_ifsc" style="display:none"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.branch_name.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.branch_name }}
+                      <span class="field-error" id="err_branch_name" style="display:none"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.bank_name.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.bank_name }}
+                      <span class="field-error" id="err_bank_name" style="display:none"></span>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -267,8 +354,9 @@
               </div>
 
               <script>
-                // certificate UI helper - uses themes & modules_by_theme_json from context
+                // Modules & previously-submitted rows from view
                 const modulesByTheme = {{ modules_by_theme_json|safe }};
+                const submittedCertRows = {{ submitted_cert_rows_json|default:"[]"|safe }};
 
                 function normThemeKey(t) { return t ? String(t).trim().toLowerCase() : ''; }
 
@@ -285,6 +373,13 @@
                     opt.textContent = m.name;
                     moduleSelect.appendChild(opt);
                   }
+                }
+
+                function makeErrorEl() {
+                  const el = document.createElement('span');
+                  el.className = 'field-error';
+                  el.style.display = 'none';
+                  return el;
                 }
 
                 function makeCertRow(index, preTheme, preModule, preNum, preIssuing, preIssuedOn) {
@@ -308,6 +403,8 @@
                   {% endfor %}
                   if (preTheme) themeSelect.value = preTheme;
                   themeLabel.appendChild(themeSelect);
+                  const themeErr = makeErrorEl();
+                  themeLabel.appendChild(themeErr);
                   wrapper.appendChild(themeLabel);
 
                   // Module (right)
@@ -319,6 +416,8 @@
                   const defM = document.createElement('option'); defM.value=''; defM.textContent='-- Select module --';
                   moduleSelect.appendChild(defM);
                   moduleLabel.appendChild(moduleSelect);
+                  const moduleErr = makeErrorEl();
+                  moduleLabel.appendChild(moduleErr);
                   wrapper.appendChild(moduleLabel);
 
                   // stacked fields (span full width)
@@ -329,21 +428,27 @@
                   numLabel.innerHTML = '<div style="font-weight:700;">Certificate No.</div>';
                   const numInput = document.createElement('input'); numInput.type='text';
                   numInput.name = `certs-${index}-number`; numInput.value = preNum || '';
-                  numLabel.appendChild(numInput); stack.appendChild(numLabel);
+                  numLabel.appendChild(numInput);
+                  const numErr = makeErrorEl(); numLabel.appendChild(numErr);
+                  stack.appendChild(numLabel);
 
                   // issuing authority
                   const issuingLabel = document.createElement('label');
                   issuingLabel.innerHTML = '<div style="font-weight:700;">Issuing authority</div>';
                   const issuingInput = document.createElement('input'); issuingInput.type='text';
                   issuingInput.name = `certs-${index}-issuing`; issuingInput.value = preIssuing || '';
-                  issuingLabel.appendChild(issuingInput); stack.appendChild(issuingLabel);
+                  issuingLabel.appendChild(issuingInput);
+                  const issuingErr = makeErrorEl(); issuingLabel.appendChild(issuingErr);
+                  stack.appendChild(issuingLabel);
 
                   // issued on
                   const issuedOnLabel = document.createElement('label');
                   issuedOnLabel.innerHTML = '<div style="font-weight:700;">Issued on</div>';
                   const issuedOnInput = document.createElement('input'); issuedOnInput.type='date';
                   issuedOnInput.name = `certs-${index}-issued_on`; if (preIssuedOn) issuedOnInput.value = preIssuedOn;
-                  issuedOnLabel.appendChild(issuedOnInput); stack.appendChild(issuedOnLabel);
+                  issuedOnLabel.appendChild(issuedOnInput);
+                  const issuedOnErr = makeErrorEl(); issuedOnLabel.appendChild(issuedOnErr);
+                  stack.appendChild(issuedOnLabel);
 
                   // file + remove row
                   const fileRow = document.createElement('div'); fileRow.className = 'file-row';
@@ -351,7 +456,9 @@
                   fileLabel.innerHTML = '<div style="font-weight:700;">Certificate file</div>';
                   const fileInput = document.createElement('input'); fileInput.type='file';
                   fileInput.name = `certs-${index}-file`; fileInput.accept = '.pdf,image/*';
-                  fileLabel.appendChild(fileInput); fileRow.appendChild(fileLabel);
+                  fileLabel.appendChild(fileInput);
+                  const fileErr = makeErrorEl(); fileLabel.appendChild(fileErr);
+                  fileRow.appendChild(fileLabel);
 
                   const removeBtn = document.createElement('button');
                   removeBtn.type = 'button'; removeBtn.className = 'remove-cert-btn'; removeBtn.textContent = 'Remove';
@@ -369,6 +476,27 @@
                     if (preModule) { setTimeout(()=>{ moduleSelect.value = String(preModule); }, 0); }
                   }
 
+                  // helper to set error text on a field container
+                  wrapper.setError = function(fieldName, message) {
+                    const mapping = {
+                      'theme': themeErr,
+                      'module': moduleErr,
+                      'number': numErr,
+                      'issuing': issuingErr,
+                      'issued_on': issuedOnErr,
+                      'file': fileErr
+                    };
+                    const el = mapping[fieldName];
+                    if (el) {
+                      el.textContent = message || '';
+                      el.style.display = message ? 'block' : 'none';
+                    }
+                  };
+
+                  wrapper.clearErrors = function(){
+                    ['theme','module','number','issuing','issued_on','file'].forEach(f => wrapper.setError(f,''));
+                  };
+
                   return wrapper;
                 }
 
@@ -380,37 +508,442 @@
                   });
                 }
 
-                (function initCertificatesUI(){
-                  const container = document.getElementById('certificates-container');
-                  let nextIndex = 0;
-                  const existing = container.querySelector('.cert-row');
-                  if (existing) {
-                    const preTheme = existing.querySelector('.theme-select')?.value || '';
-                    const preModule = existing.querySelector('.module-select')?.value || '';
-                    const preNum = existing.querySelector('input[name$="-number"]')?.value || '';
-                    const preIss = existing.querySelector('input[name$="-issuing"]')?.value || '';
-                    const preIssued = existing.querySelector('input[name$="-issued_on"]')?.value || '';
-                    const newRow = makeCertRow(nextIndex++, preTheme, preModule, preNum, preIss, preIssued);
-                    container.replaceChild(newRow, existing);
-                  } else {
-                    container.appendChild(makeCertRow(nextIndex++));
+                // ---------- Tab state preservation ----------
+                const tabState = { 0: {}, 1: {}, 2: { rows: [] }, 3: {} };
+
+                function saveTabState(index) {
+                  if (index === 0) {
+                    tabState[0] = {
+                      full_name: (document.querySelector('input[name="full_name"]') || {}).value || '',
+                      date_of_birth: (document.querySelector('input[name="date_of_birth"]') || {}).value || '',
+                      mobile_no: (document.querySelector('input[name="mobile_no"]') || {}).value || '',
+                      designation: (document.querySelector('input[name="designation"]') || {}).value || '',
+                      aadhaar_no: (document.querySelector('input[name="aadhaar_no"]') || {}).value || '',
+                      empanel_district: (document.querySelector('input[name="empanel_district"]') || {}).value || '',
+                      social_category: (document.querySelector('input[name="social_category"]') || {}).value || '',
+                      gender: (document.querySelector('select[name="gender"]') || {}).value || '',
+                      education: (document.querySelector('input[name="education"]') || {}).value || '',
+                      marital_status: (document.querySelector('input[name="marital_status"]') || {}).value || '',
+                      parent_or_spouse_name: (document.querySelector('input[name="parent_or_spouse_name"]') || {}).value || '',
+                    };
+                  } else if (index === 1) {
+                    tabState[1] = {
+                      bank_account_number: (document.querySelector('input[name="bank_account_number"]') || {}).value || '',
+                      ifsc: (document.querySelector('input[name="ifsc"]') || {}).value || '',
+                      branch_name: (document.querySelector('input[name="branch_name"]') || {}).value || '',
+                      bank_name: (document.querySelector('input[name="bank_name"]') || {}).value || ''
+                    };
+                  } else if (index === 2) {
+                    // capture cert rows (non-file fields only)
+                    const rows = Array.from(document.querySelectorAll('#certificates-container .cert-row'));
+                    tabState[2].rows = rows.map(r => {
+                      return {
+                        theme: (r.querySelector('.theme-select') || {}).value || '',
+                        module_id: (r.querySelector('.module-select') || {}).value || '',
+                        certificate_number: (r.querySelector(`input[name^="certs-"][name$="-number"]`, r) || {}).value || '',
+                        issuing_authority: (r.querySelector(`input[name^="certs-"][name$="-issuing"]`, r) || {}).value || '',
+                        issued_on: (r.querySelector(`input[name^="certs-"][name$="-issued_on"]`, r) || {}).value || ''
+                      };
+                    });
+                  } else if (index === 3) {
+                    tabState[3] = {
+                      other_achievements: (document.querySelector('textarea[name="other_achievements"]') || {}).value || '',
+                      success_stories: (document.querySelector('textarea[name="success_stories"]') || {}).value || ''
+                    };
+                  }
+                }
+
+                function restoreTabState(index) {
+                  if (index === 0) {
+                    const s = tabState[0] || {};
+                    if (s.full_name !== undefined) (document.querySelector('input[name="full_name"]') || {}).value = s.full_name;
+                    if (s.date_of_birth !== undefined) (document.querySelector('input[name="date_of_birth"]') || {}).value = s.date_of_birth;
+                    if (s.mobile_no !== undefined) (document.querySelector('input[name="mobile_no"]') || {}).value = s.mobile_no;
+                    if (s.designation !== undefined) (document.querySelector('input[name="designation"]') || {}).value = s.designation;
+                    if (s.aadhaar_no !== undefined) (document.querySelector('input[name="aadhaar_no"]') || {}).value = s.aadhaar_no;
+                    if (s.parent_or_spouse_name !== undefined) (document.querySelector('input[name="parent_or_spouse_name"]') || {}).value = s.parent_or_spouse_name;
+                  } else if (index === 1) {
+                    const s = tabState[1] || {};
+                    if (s.bank_account_number !== undefined) (document.querySelector('input[name="bank_account_number"]') || {}).value = s.bank_account_number;
+                    if (s.ifsc !== undefined) (document.querySelector('input[name="ifsc"]') || {}).value = s.ifsc;
+                    if (s.branch_name !== undefined) (document.querySelector('input[name="branch_name"]') || {}).value = s.branch_name;
+                    if (s.bank_name !== undefined) (document.querySelector('input[name="bank_name"]') || {}).value = s.bank_name;
+                  } else if (index === 2) {
+                    const s = tabState[2] || { rows: [] };
+                    const container = document.getElementById('certificates-container');
+                    // if no rows present or different count, rebuild from state
+                    if (!s.rows.length) return;
+                    container.innerHTML = '';
+                    let nextIndex = 0;
+                    for (const r of s.rows) {
+                      container.appendChild(makeCertRow(nextIndex++, r.theme || '', r.module_id || '', r.certificate_number || '', r.issuing_authority || '', r.issued_on || ''));
+                    }
+                    ensureRemoveButtons();
+                  } else if (index === 3) {
+                    const s = tabState[3] || {};
+                    if (s.other_achievements !== undefined) (document.querySelector('textarea[name="other_achievements"]') || {}).value = s.other_achievements;
+                    if (s.success_stories !== undefined) (document.querySelector('textarea[name="success_stories"]') || {}).value = s.success_stories;
+                    updateWordCount(); // to update counters
+                  }
+                }
+
+                // ---------- Validation ----------
+
+                function clearAllFieldErrors() {
+                  document.querySelectorAll('.cert-row').forEach(r => {
+                    if (r.clearErrors) r.clearErrors();
+                  });
+                  // hide basic field errors
+                  ['err_full_name','err_mobile_no','err_aadhaar_no','err_parent_or_spouse_name','err_bank_account_number','err_ifsc','err_branch_name','err_bank_name'].forEach(id=>{
+                    const el = document.getElementById(id); if (el) { el.style.display='none'; el.textContent=''; }
+                  });
+                }
+
+                function validateFullName() {
+                  const el = document.querySelector('input[name="full_name"]');
+                  const err = document.getElementById('err_full_name');
+                  if (!el) return true;
+                  const v = el.value.trim();
+                  if (!v) {
+                    err.style.display = 'block'; err.textContent = 'Full name is required.'; return false;
+                  }
+                  // only uppercase letters and spaces allowed
+                  if (!/^[A-Z\s]+$/.test(v)) {
+                    err.style.display = 'block'; err.textContent = 'Must be uppercase letters and spaces only.'; return false;
+                  }
+                  err.style.display = 'none'; err.textContent = ''; return true;
+                }
+
+                function validateMobile() {
+                  const el = document.querySelector('input[name="mobile_no"]');
+                  const err = document.getElementById('err_mobile_no');
+                  if (!el) return true;
+                  const v = el.value.trim();
+                  if (!v) { err.style.display='block'; err.textContent='Mobile number is required.'; return false; }
+                  if (!/^\d{10}$/.test(v)) { err.style.display='block'; err.textContent='Mobile must be exactly 10 digits.'; return false; }
+                  err.style.display='none'; err.textContent=''; return true;
+                }
+
+                function validateAadhaar() {
+                  const el = document.querySelector('input[name="aadhaar_no"]');
+                  const err = document.getElementById('err_aadhaar_no');
+                  if (!el) return true;
+                  const v = el.value.trim();
+                  if (!v) { err.style.display='none'; err.textContent=''; return true; } // optional field
+                  if (!/^\d{12}$/.test(v)) { err.style.display='block'; err.textContent='Aadhaar must be exactly 12 digits.'; return false; }
+                  err.style.display='none'; err.textContent=''; return true;
+                }
+
+                function validateParentOrSpouse() {
+                  const el = document.querySelector('input[name="parent_or_spouse_name"]');
+                  const err = document.getElementById('err_parent_or_spouse_name');
+                  if (!el) return true;
+                  const v = el.value.trim();
+                  if (!v) { err.style.display='none'; err.textContent=''; return true; } // optional
+                  if (!/^[A-Z\s]+$/.test(v)) { err.style.display='block'; err.textContent='Must be uppercase letters and spaces only.'; return false; }
+                  err.style.display='none'; err.textContent=''; return true;
+                }
+
+                function validateBankTab() {
+                  let ok = true;
+                  const acct = document.querySelector('input[name="bank_account_number"]');
+                  const ifsc = document.querySelector('input[name="ifsc"]');
+                  const bank = document.querySelector('input[name="bank_name"]');
+                  const branch = document.querySelector('input[name="branch_name"]');
+
+                  function setErr(elId, msg) {
+                    const e = document.getElementById(elId);
+                    if (e) { e.style.display='block'; e.textContent=msg; }
+                  }
+                  function clearErr(elId) {
+                    const e = document.getElementById(elId);
+                    if (e) { e.style.display='none'; e.textContent=''; }
                   }
 
-                  document.getElementById('add-cert-btn').addEventListener('click', function(){
-                    container.appendChild(makeCertRow(nextIndex++));
-                    ensureRemoveButtons();
+                  if (!acct || !acct.value.trim()) { setErr('err_bank_account_number','Account number is required.'); ok = false; } else clearErr('err_bank_account_number');
+                  if (!ifsc || !ifsc.value.trim()) { setErr('err_ifsc','IFSC is required.'); ok = false; } else clearErr('err_ifsc');
+                  if (!bank || !bank.value.trim()) { setErr('err_bank_name','Bank name is required.'); ok = false; } else if (!/^[A-Z\s]+$/.test(bank.value.trim())) { setErr('err_bank_name','Bank name must be uppercase letters only.'); ok = false; } else clearErr('err_bank_name');
+                  if (!branch || !branch.value.trim()) { setErr('err_branch_name','Branch name is required.'); ok = false; } else if (!/^[A-Z\s]+$/.test(branch.value.trim())) { setErr('err_branch_name','Branch name must be uppercase letters only.'); ok = false; } else clearErr('err_branch_name');
+
+                  return ok;
+                }
+
+                function validateCertificatesTab() {
+                  let ok = true;
+                  const rows = Array.from(document.querySelectorAll('#certificates-container .cert-row'));
+                  if (!rows.length) {
+                    const container = document.getElementById('certificates-container');
+                    let err = container.querySelector('.field-error.global');
+                    if (!err) {
+                      err = document.createElement('span');
+                      err.className = 'field-error global';
+                      container.parentNode.insertBefore(err, container.nextSibling);
+                    }
+                    err.textContent = 'Please add at least one certificate row.'; err.style.display='block';
+                    return false;
+                  } else {
+                    const globalErr = document.querySelector('#certificates-container + .field-error.global');
+                    if (globalErr) { globalErr.textContent=''; globalErr.style.display='none'; }
+                  }
+
+                  rows.forEach((r, idx) => {
+                    r.clearErrors && r.clearErrors();
+                    const theme = r.querySelector('.theme-select');
+                    const module = r.querySelector('.module-select');
+                    const num = r.querySelector(`input[name="certs-${r.dataset.index}-number"]`);
+                    const issuing = r.querySelector(`input[name="certs-${r.dataset.index}-issuing"]`);
+                    const issuedOn = r.querySelector(`input[name="certs-${r.dataset.index}-issued_on"]`);
+                    const fileInput = r.querySelector(`input[name="certs-${r.dataset.index}-file"]`);
+
+                    if (!theme || !theme.value.trim()) {
+                      r.setError('theme','Theme is required.'); ok = false;
+                    }
+                    if (!module || !module.value.trim()) {
+                      r.setError('module','Module is required.'); ok = false;
+                    }
+                    if (!num || !num.value.trim()) {
+                      r.setError('number','Certificate number is required.'); ok = false;
+                    }
+                    if (!issuing || !issuing.value.trim()) {
+                      r.setError('issuing','Issuing authority is required.'); ok = false;
+                    }
+                    if (!issuedOn || !issuedOn.value.trim()) {
+                      r.setError('issued_on','Issued on date is required.'); ok = false;
+                    }
+                    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                      r.setError('file','Certificate file is required.'); ok = false;
+                    } else {
+                      const f = fileInput.files[0];
+                      const maxBytes = 10 * 1024 * 1024; // 10 MB
+                      if (f.size > maxBytes) { r.setError('file', `File too large (${(f.size/1024/1024).toFixed(2)} MB). Maximum is 10 MB.`); ok = false; }
+                      const name = f.name.toLowerCase();
+                      if (!(name.endsWith('.pdf') || f.type.startsWith('image/'))) { r.setError('file', 'Only PDF or image files are allowed.'); ok = false; }
+                    }
                   });
 
-                  ensureRemoveButtons();
-                })();
+                  return ok;
+                }
+
+                function validateAchievementsTab() {
+                  return updateWordCount(); // updates counters and returns boolean
+                }
+
+                function validateCurrentTab(index) {
+                  if (index === 0) {
+                    return validateFullName() && validateMobile() && validateAadhaar() && validateParentOrSpouse();
+                  }
+                  if (index === 1) return validateBankTab();
+                  if (index === 2) return validateCertificatesTab();
+                  if (index === 3) return validateAchievementsTab();
+                  return true;
+                }
+
+                // ---------- Word count helpers ----------
+                function countWords(text) {
+                  if (!text) return 0;
+                  return (text.trim().split(/\s+/).filter(Boolean).length);
+                }
+
+                function updateWordCount() {
+                  const ach = document.querySelector('textarea[name="other_achievements"]');
+                  const stories = document.querySelector('textarea[name="success_stories"]');
+                  const achCountEl = document.getElementById('wc_achievements');
+                  const storiesCountEl = document.getElementById('wc_stories');
+                  let ok = true;
+                  if (ach && achCountEl) {
+                    const wc = countWords(ach.value);
+                    achCountEl.textContent = `${wc} words`;
+                    achCountEl.classList.toggle('warning', wc > 200);
+                    if (wc > 200) ok = false;
+                  }
+                  if (stories && storiesCountEl) {
+                    const wc = countWords(stories.value);
+                    storiesCountEl.textContent = `${wc} words`;
+                    storiesCountEl.classList.toggle('warning', wc > 200);
+                    if (wc > 200) ok = false;
+                  }
+                  return ok;
+                }
+
+                // ---------- Initialize and wiring ----------
+                document.addEventListener('DOMContentLoaded', function() {
+                  // Initialize certificates UI from server-submitted rows OR empty
+                  function initCertificatesUI() {
+                    const container = document.getElementById('certificates-container');
+                    container.innerHTML = '';
+                    let nextIndex = 0;
+                    if (Array.isArray(submittedCertRows) && submittedCertRows.length) {
+                      for (const r of submittedCertRows) {
+                        container.appendChild(makeCertRow(nextIndex++, r.theme||'', r.module_id||'', r.certificate_number||'', r.issuing_authority||'', r.issued_on||''));
+                      }
+                    } else {
+                      container.appendChild(makeCertRow(nextIndex++));
+                    }
+                    document.getElementById('add-cert-btn').addEventListener('click', function(){
+                      container.appendChild(makeCertRow(nextIndex++));
+                      ensureRemoveButtons();
+                    });
+                    ensureRemoveButtons();
+                  }
+                  initCertificatesUI();
+
+                  // make some input attribute tweaks for UX (no server-side change)
+                  const aad = document.querySelector('input[name="aadhaar_no"]');
+                  if (aad) { aad.setAttribute('maxlength','12'); aad.setAttribute('inputmode','numeric'); }
+                  const mobile = document.querySelector('input[name="mobile_no"]');
+                  if (mobile) { mobile.setAttribute('maxlength','10'); mobile.setAttribute('inputmode','numeric'); }
+                  // transform certain fields to uppercase and restrict characters visually
+                  const uppercaseAlphaFields = [
+                    'full_name','parent_or_spouse_name','bank_name','branch_name'
+                  ];
+                  uppercaseAlphaFields.forEach(name => {
+                    const el = document.querySelector(`[name="${name}"]`);
+                    if (!el) return;
+                    el.addEventListener('input', function(e){
+                      // convert to uppercase and strip disallowed chars (only letters & spaces)
+                      const before = el.value;
+                      const transformed = before.toUpperCase().replace(/[^A-Z\s]/g,'');
+                      if (transformed !== before) {
+                        // set caret-friendly assignment
+                        const selStart = el.selectionStart;
+                        el.value = transformed;
+                        try { el.setSelectionRange(selStart, selStart); } catch(e) {}
+                      } else {
+                        el.value = transformed;
+                      }
+                    });
+                  });
+
+                  // achievements wordcount UI
+                  const achHolder = document.querySelector('textarea[name="other_achievements"]');
+                  const storiesHolder = document.querySelector('textarea[name="success_stories"]');
+                  if (achHolder) {
+                    const span = document.createElement('div'); span.className='wordcount'; span.id='wc_achievements'; achHolder.parentNode.appendChild(span);
+                    achHolder.addEventListener('input', updateWordCount);
+                  }
+                  if (storiesHolder) {
+                    const span = document.createElement('div'); span.className='wordcount'; span.id='wc_stories'; storiesHolder.parentNode.appendChild(span);
+                    storiesHolder.addEventListener('input', updateWordCount);
+                  }
+                  updateWordCount();
+
+                  // Tab + heading logic with state preservation
+                  const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+                  const tabs = Array.from(document.querySelectorAll('.tab'));
+                  let current = 0;
+
+                  function getPanelHeadingForTab(index) {
+                    return [
+                      'Basic Identification',
+                      'Bank details',
+                      'Certificates',
+                      'Achievements & Success Stories'
+                    ][index] || 'Details';
+                  }
+
+                  function showTab(i){
+                    tabs.forEach((t,idx)=> t.style.display = idx===i ? 'block' : 'none');
+                    tabBtns.forEach((b,idx)=> b.classList.toggle('active', idx===i));
+                    document.getElementById('prevBtn').style.display = i===0 ? 'none' : 'inline-block';
+                    document.getElementById('nextBtn').style.display = i===tabs.length-1 ? 'none' : 'inline-block';
+                    const submit = document.getElementById('submitBtn');
+                    const reset = document.getElementById('resetBtn');
+                    if (i===tabs.length-1) {
+                      submit.style.display = 'inline-block';
+                      reset.style.display = 'inline-block';
+                    } else {
+                      submit.style.display = 'none';
+                      reset.style.display = 'none';
+                    }
+                    const headingEl = document.getElementById('panel-heading');
+                    if (headingEl) headingEl.textContent = getPanelHeadingForTab(i);
+                    // restore state for this tab (so values not lost when navigating)
+                    restoreTabState(i);
+                  }
+
+                  tabBtns.forEach((b, idx) => b.addEventListener('click', ()=> {
+                    if (idx === current) return;
+                    // save current tab then validate only if trying to jump forward
+                    saveTabState(current);
+                    if (idx > current) {
+                      if (!validateCurrentTab(current)) return;
+                    }
+                    current = idx;
+                    showTab(current);
+                  }));
+
+                  document.getElementById('prevBtn').addEventListener('click', ()=> {
+                    if (current>0) {
+                      saveTabState(current);
+                      current--;
+                      showTab(current);
+                    }
+                  });
+
+                  document.getElementById('nextBtn').addEventListener('click', ()=> {
+                    // validate current tab before moving forward (client-side)
+                    if (!validateCurrentTab(current)) return;
+                    saveTabState(current);
+                    if (current < tabs.length-1) {
+                      current++;
+                      showTab(current);
+                    }
+                  });
+
+                  // normalize DOB on submit & final validation
+                  const formEl = document.querySelector('form');
+                  formEl.addEventListener('submit', function(e){
+                    const el = document.querySelector('input[name="date_of_birth"]');
+                    if (el) {
+                      const v = el.value.trim();
+                      if (v && v.indexOf('/') !== -1) {
+                        const parts = v.split('/');
+                        if (parts.length === 3) {
+                          const dd = parts[0].padStart(2,'0');
+                          const mm = parts[1].padStart(2,'0');
+                          const yyyy = parts[2];
+                          el.value = `${yyyy}-${mm}-${dd}`;
+                        }
+                      }
+                    }
+
+                    // save whichever tab we're on
+                    saveTabState(current);
+
+                    // run all validators; if any fail, show the first invalid tab and prevent submit
+                    for (let i=0;i<tabs.length;i++){
+                      if (!validateCurrentTab(i)) {
+                        current = i; showTab(current);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                      }
+                    }
+                    return true; // allow submit to proceed
+                  });
+
+                  // initial show
+                  showTab(0);
+                }); // DOMContentLoaded end
               </script>
             </div>
 
             <div id="tab-achievements" class="tab" style="display:none;">
               <table class="form-table">
                 <tbody>
-                  <tr><td class="label-cell">{{ form.other_achievements.label_tag }}</td><td class="input-cell">{{ form.other_achievements }}</td></tr>
-                  <tr><td class="label-cell">{{ form.success_stories.label_tag }}</td><td class="input-cell">{{ form.success_stories }}</td></tr>
+                  <tr>
+                    <td class="label-cell">{{ form.other_achievements.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.other_achievements }}
+                      <!-- wordcount placeholder will be added by JS -->
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">{{ form.success_stories.label_tag }}</td>
+                    <td class="input-cell">
+                      {{ form.success_stories }}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -425,69 +958,6 @@
           <button type="submit" id="submitBtn" class="fancy-btn" style="display:none;">Submit</button>
           <button type="reset" id="resetBtn" class="fancy-btn reset" style="display:none;">Reset</button>
         </div>
-
-        <script>
-          // run wiring after DOM ready so headings and tabs always update
-          document.addEventListener('DOMContentLoaded', function() {
-            // normalize DOB on submit
-            document.querySelector('form').addEventListener('submit', function(e){
-              const el = document.querySelector('input[name="date_of_birth"]');
-              if (!el) return;
-              const v = el.value.trim();
-              if (v && v.indexOf('/') !== -1) {
-                const parts = v.split('/');
-                if (parts.length === 3) {
-                  const dd = parts[0].padStart(2,'0');
-                  const mm = parts[1].padStart(2,'0');
-                  const yyyy = parts[2];
-                  el.value = `${yyyy}-${mm}-${dd}`;
-                }
-              }
-            });
-
-            // tab + heading logic
-            const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
-            const tabs = Array.from(document.querySelectorAll('.tab'));
-            let current = 0;
-
-            function getPanelHeadingForTab(index) {
-              return [
-                'Basic Identification',
-                'Bank details',
-                'Certificates',
-                'Achievements & Success Stories'
-              ][index] || 'Details';
-            }
-
-            function showTab(i){
-              tabs.forEach((t,idx)=> t.style.display = idx===i ? 'block' : 'none');
-              tabBtns.forEach((b,idx)=> b.classList.toggle('active', idx===i));
-              document.getElementById('prevBtn').style.display = i===0 ? 'none' : 'inline-block';
-              document.getElementById('nextBtn').style.display = i===tabs.length-1 ? 'none' : 'inline-block';
-              const submit = document.getElementById('submitBtn');
-              const reset = document.getElementById('resetBtn');
-              if (i===tabs.length-1) {
-                submit.style.display = 'inline-block';
-                reset.style.display = 'inline-block';
-              } else {
-                submit.style.display = 'none';
-                reset.style.display = 'none';
-              }
-              const headingEl = document.getElementById('panel-heading');
-              if (headingEl) headingEl.textContent = getPanelHeadingForTab(i);
-            }
-
-            tabBtns.forEach((b, idx) => b.addEventListener('click', ()=> { current = idx; showTab(current); }));
-            document.getElementById('prevBtn').addEventListener('click', ()=> { if(current>0){ current--; showTab(current);} });
-            document.getElementById('nextBtn').addEventListener('click', ()=> { if(current<tabs.length-1){ current++; showTab(current);} });
-
-            // keyboard-friendly role
-            tabBtns.forEach(b => b.setAttribute('role','tab'));
-
-            // initial show
-            showTab(0);
-          });
-        </script>
       </form>
     </div>
 
