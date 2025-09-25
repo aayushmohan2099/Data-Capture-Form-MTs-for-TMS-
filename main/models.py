@@ -168,12 +168,16 @@ class MasterTrainer(models.Model):
     GENDER_CHOICES = [
         ('Male', 'Male'),
         ('Female', 'Female'),
-        ('Others', 'Others')
+        ('Transgender', 'Transgender')
     ]
 
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, null=True)
 
     EDUCATION_CHOICES =[
+        ('Literate', 'Literate'),
+        ('8th Pass', '8th Pass'),
+        ('10th Pass', '10th Pass'),
+        ('12th Pass', '12th Pass'),
         ('Under Graduate (UG)', 'Under Graduate (UG)'),
         ('Post Graduate (PG)', 'Post Graduate (PG)')
     ]
@@ -324,12 +328,16 @@ class MasterTrainerSubmission(models.Model):
     GENDER_CHOICES = [
         ('Male', 'Male'),
         ('Female', 'Female'),
-        ('Others', 'Others')
+        ('Transgender', 'Transgender')
     ]
 
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, null=True)
 
     EDUCATION_CHOICES =[
+        ('Literate', 'Literate'),
+        ('8th Pass', '8th Pass'),
+        ('10th Pass', '10th Pass'),
+        ('12th Pass', '12th Pass'),
         ('Under Graduate (UG)', 'Under Graduate (UG)'),
         ('Post Graduate (PG)', 'Post Graduate (PG)')
     ]

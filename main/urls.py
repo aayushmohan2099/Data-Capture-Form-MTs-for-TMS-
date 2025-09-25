@@ -4,7 +4,6 @@ from . import views, api
 
 urlpatterns = [
     path('', views.login_view, name='login'),
-    path('signup/', views.master_signup, name='master_signup'),
     path('logout/', views.logout_view, name='logout'),
     # master trainer pages
     path('dashboard/master/', views.master_home, name='master_home'),

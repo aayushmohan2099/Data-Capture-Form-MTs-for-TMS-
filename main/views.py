@@ -103,13 +103,10 @@ def master_signup(request):
         # create initial captcha for the form
         a = random.randint(1,9)
         b = random.randint(1,9)
-        op = random.choice(['+','-','*'])
+        op = random.choice(['+','*'])
         if op == '+':
             question = f"{a} + {b} = ?"
             ans = a + b
-        elif op == '-':
-            question = f"{a} - {b} = ?"
-            ans = a - b
         else:
             question = f"{a} × {b} = ?"
             ans = a * b
@@ -129,9 +126,8 @@ def master_signup(request):
     if expected is None:
         messages.error(request, "Captcha expired or missing. Please reload the page and try again.")
         # Recreate a new captcha so the template has one to show (GET behaviour)
-        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','-','*'])
+        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','*'])
         if op == '+': question = f"{a} + {b} = ?"; ans = a + b
-        elif op == '-': question = f"{a} - {b} = ?"; ans = a - b
         else: question = f"{a} × {b} = ?"; ans = a * b
         request.session['signup_captcha_answer'] = str(ans)
         return render(request, 'main/signup.html', {'form': form, 'captcha_question': question})
@@ -140,9 +136,8 @@ def master_signup(request):
     if not posted or posted != expected:
         messages.error(request, "Captcha incorrect. Please try again.")
         # generate a fresh captcha for re-display
-        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','-','*'])
+        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','*'])
         if op == '+': question = f"{a} + {b} = ?"; ans = a + b
-        elif op == '-': question = f"{a} - {b} = ?"; ans = a - b
         else: question = f"{a} × {b} = ?"; ans = a * b
         request.session['signup_captcha_answer'] = str(ans)
         return render(request, 'main/signup.html', {'form': form, 'captcha_question': question})
@@ -150,13 +145,27 @@ def master_signup(request):
     # captcha OK -> continue with your existing signup flow:
     if form.is_valid():
         user, mt = form.save()
-        messages.success(request, "Account created. Please log in.")
-        return redirect('login')
+        # Instead of redirecting immediately, set a context flag so the template
+        # shows the JS alert and then navigates to login.
+        # Generate a fresh captcha (so page has something if user refreshes)
+        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','*'])
+        if op == '+': question = f"{a} + {b} = ?"; ans = a + b
+        else: question = f"{a} × {b} = ?"; ans = a * b
+        request.session['signup_captcha_answer'] = str(ans)
+
+        # Render the same signup form template; the template will show the alert
+        # and then redirect to login. (You might also clear the form or show a
+        # fresh blank form if desired.)
+        form = MasterTrainerSignupForm()  # blank form for re-render
+        return render(request, 'main/signup.html', {
+            'form': form,
+            'captcha_question': question,
+            'account_created': True,
+        })
     else:
         # form invalid: re-render and regenerate captcha
-        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','-','*'])
+        a = random.randint(1,9); b = random.randint(1,9); op = random.choice(['+','*'])
         if op == '+': question = f"{a} + {b} = ?"; ans = a + b
-        elif op == '-': question = f"{a} - {b} = ?"; ans = a - b
         else: question = f"{a} × {b} = ?"; ans = a * b
         request.session['signup_captcha_answer'] = str(ans)
         return render(request, 'main/signup.html', {'form': form, 'captcha_question': question})
